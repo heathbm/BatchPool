@@ -13,6 +13,9 @@
     <RepositoryUrl>https://github.com/heathbm/BatchPool</RepositoryUrl>
     <PackageTags>batchpool;task;batch;semaphore;concurrent;async;</PackageTags>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <Version>1.0.1</Version>
+    <AssemblyVersion>1.0.1</AssemblyVersion>
+    <FileVersion>1.0.1</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
