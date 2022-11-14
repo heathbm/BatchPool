@@ -30,15 +30,15 @@ namespace BatchPool.UnitTests.BasicTests
         private static async Task CreateBatchPool_AddTasksInBatch(int numberOfTasks, int batchSize, bool isEnabled, bool runAndForget, TaskType taskType)
         {
             var progressTracker = new ProgressTracker();
-            var batchPool = new BatchPool(batchSize, isEnabled);
+            var batchPool = new BatchPoolContainer(batchSize, isEnabled);
 
-            ICollection<BatchTask> batchTasks = await CreateAndAddTasks(numberOfTasks, isEnabled, runAndForget, taskType, progressTracker, batchPool);
+            ICollection<BatchPoolTask> batchTasks = await CreateAndAddTasks(numberOfTasks, isEnabled, runAndForget, taskType, progressTracker, batchPool);
             SharedTests.PreChecks(numberOfTasks, isEnabled, runAndForget, batchTasks, progressTracker, batchPool);
             await TestUtility.StartTasksIfRequiredAndWaitForAllTasksToComplete(isEnabled, runAndForget, batchPool);
             SharedTests.PostChecks(numberOfTasks, progressTracker, batchTasks, batchPool);
         }
 
-        private static async Task<ICollection<BatchTask>> CreateAndAddTasks(int numberOfTasks, bool isEnabled, bool runAndForget, TaskType taskType, ProgressTracker progressTracker, BatchPool batchPool)
+        private static async Task<ICollection<BatchPoolTask>> CreateAndAddTasks(int numberOfTasks, bool isEnabled, bool runAndForget, TaskType taskType, ProgressTracker progressTracker, BatchPoolContainer batchPoolContainer)
         {
             var tasksToAdd = new List<Task>();
             var functionsToAdd = new List<Func<Task>>();
@@ -67,16 +67,16 @@ namespace BatchPool.UnitTests.BasicTests
             // Add in a batch
             var batchTasks = taskType switch
             {
-                TaskType.Task => batchPool.Add(tasksToAdd),
-                TaskType.WrappedTask => batchPool.Add(tasksToAdd),
-                TaskType.AsyncFunc => batchPool.Add(functionsToAdd),
-                TaskType.Action => batchPool.Add(actionsToAdd),
+                TaskType.Task => batchPoolContainer.Add(tasksToAdd),
+                TaskType.WrappedTask => batchPoolContainer.Add(tasksToAdd),
+                TaskType.AsyncFunc => batchPoolContainer.Add(functionsToAdd),
+                TaskType.Action => batchPoolContainer.Add(actionsToAdd),
                 _ => throw new NotImplementedException()
             };
 
             if (!runAndForget && isEnabled)
             {
-                await batchPool.WaitForAllAsync();
+                await batchPoolContainer.WaitForAllAsync();
             }
 
             return batchTasks;

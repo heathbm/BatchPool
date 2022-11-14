@@ -3,15 +3,15 @@ using BatchPool.Tasks.Callbacks;
 namespace BatchPool.Tasks.BatchTasks
 {
     /// <summary>
-    /// A container for a task and Callback.
+    /// A container for a task and an optional Callback.
     /// </summary>
-    public abstract class BatchTask
+    public abstract class BatchPoolTask
     {
-        private readonly ICallback? _batchTaskCallback;
+        private readonly ICallback? _callback;
 
-        private protected BatchTask(ICallback? batchTaskCallback)
+        private protected BatchPoolTask(ICallback? callback)
         {
-            _batchTaskCallback = batchTaskCallback;
+            _callback = callback;
         }
 
         /// <summary>
@@ -58,9 +58,9 @@ namespace BatchPool.Tasks.BatchTasks
             {
                 await task.ConfigureAwait(false);
 
-                if (_batchTaskCallback != null)
+                if (_callback != null)
                 {
-                    await _batchTaskCallback
+                    await _callback
                         .RunCallbackIfPresent()
                         .ConfigureAwait(false);
                 }
@@ -74,9 +74,9 @@ namespace BatchPool.Tasks.BatchTasks
                 await task.ConfigureAwait(false);
             }
 
-            if (_batchTaskCallback != null)
+            if (_callback != null)
             {
-                await _batchTaskCallback
+                await _callback
                     .WaitForCallbackIfRequired()
                     .ConfigureAwait(false);
             }

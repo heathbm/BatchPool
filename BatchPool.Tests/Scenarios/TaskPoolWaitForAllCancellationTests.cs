@@ -13,7 +13,7 @@ namespace BatchPool.UnitTests.Scenarios
         {
             var progressTracker = new ProgressTracker();
             int batchSize = 1;
-            var batchPool = new BatchPool(batchSize, isEnabled: true);
+            var batchPool = new BatchPoolContainer(batchSize, isEnabled: true);
             var cancellationTokenSource = new CancellationTokenSource();
 
             var task = async () =>
@@ -39,7 +39,7 @@ namespace BatchPool.UnitTests.Scenarios
         {
             var progressTracker = new ProgressTracker();
             int batchSize = 1;
-            var batchPool = new BatchPool(batchSize, isEnabled: true);
+            var batchPool = new BatchPoolContainer(batchSize, isEnabled: true);
             var cancellationTokenSource = new CancellationTokenSource();
 
             var task = async () =>
@@ -66,7 +66,7 @@ namespace BatchPool.UnitTests.Scenarios
         {
             var progressTracker = new ProgressTracker();
             int batchSize = 1;
-            var batchPool = new BatchPool(batchSize, isEnabled: true);
+            var batchPool = new BatchPoolContainer(batchSize, isEnabled: true);
             var cancellationTokenSource = new CancellationTokenSource();
 
             var task = () =>
@@ -91,7 +91,7 @@ namespace BatchPool.UnitTests.Scenarios
         {
             var progressTracker = new ProgressTracker();
             int batchSize = 1;
-            var batchPool = new BatchPool(batchSize, isEnabled: true);
+            var batchPool = new BatchPoolContainer(batchSize, isEnabled: true);
             var cancellationTokenSource = new CancellationTokenSource();
 
             var task = () =>
@@ -120,7 +120,7 @@ namespace BatchPool.UnitTests.Scenarios
             var progressTracker = new ProgressTracker();
             int batchSize = 1;
             var cancellationTokenSource = new CancellationTokenSource();
-            var batchPool = new BatchPool(batchSize, isEnabled: true, cancellationToken: cancellationTokenSource.Token);
+            var batchPool = new BatchPoolContainer(batchSize, isEnabled: true, cancellationToken: cancellationTokenSource.Token);
 
             var task = () =>
             {

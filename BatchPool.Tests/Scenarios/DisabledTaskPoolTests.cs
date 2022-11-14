@@ -11,7 +11,7 @@ namespace BatchPool.UnitTests.Scenarios
         {
             var progressTracker = new ProgressTracker();
             int batchSize = 1;
-            var batchPool = new BatchPool(batchSize, isEnabled: false);
+            var batchPool = new BatchPoolContainer(batchSize, isEnabled: false);
 
             var task = new Task(() => progressTracker.IncrementProgress());
             var batchTask = batchPool.Add(task);

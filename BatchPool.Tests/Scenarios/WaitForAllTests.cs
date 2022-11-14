@@ -15,8 +15,8 @@ namespace BatchPool.UnitTests.Scenarios
             int numberOfTasks = 100;
             var progressTracker = new ProgressTracker();
             int batchSize = 5;
-            var batchPool = new BatchPool(batchSize, isEnabled: false);
-            var batchTasks = new List<BatchTask>();
+            var batchPool = new BatchPoolContainer(batchSize, isEnabled: false);
+            var batchTasks = new List<BatchPoolTask>();
 
             for (int taskIndex = 0; taskIndex < numberOfTasks; taskIndex++)
             {
@@ -26,7 +26,7 @@ namespace BatchPool.UnitTests.Scenarios
             Assert.Equal(numberOfTasks, batchPool.GetPendingTaskCount());
 
             batchPool.ResumeAndForget();
-            await BatchPool.WaitForAllAsync(batchTasks);
+            await BatchPoolContainer.WaitForAllAsync(batchTasks);
 
             SharedTests.PostChecks(numberOfTasks, progressTracker, batchTasks, batchPool);
         }
@@ -37,8 +37,8 @@ namespace BatchPool.UnitTests.Scenarios
             int numberOfTasks = 100;
             var progressTracker = new ProgressTracker();
             int batchSize = 5;
-            var batchPool = new BatchPool(batchSize, isEnabled: false);
-            var batchTasks = new List<BatchTask>();
+            var batchPool = new BatchPoolContainer(batchSize, isEnabled: false);
+            var batchTasks = new List<BatchPoolTask>();
 
             for (int taskIndex = 0; taskIndex < numberOfTasks; taskIndex++)
             {

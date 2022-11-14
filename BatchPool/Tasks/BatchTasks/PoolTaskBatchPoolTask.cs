@@ -4,14 +4,14 @@ using BatchPool.Tasks.Containers;
 namespace BatchPool.Tasks.BatchTasks
 {
     /// <inheritdoc/>
-    public class TaskBatchTask : BatchTask
+    public class PoolTaskBatchPoolTask : BatchPoolTask
     {
-        TaskContainer _batchTaskWithTaskDto;
+        TaskContainer _taskContainer;
 
-        internal TaskBatchTask(Task task, ICallback? batchTaskCallback)
-            : base(batchTaskCallback)
+        internal PoolTaskBatchPoolTask(Task task, ICallback? callback)
+            : base(callback)
         {
-            _batchTaskWithTaskDto = new(task);
+            _taskContainer = new(task);
         }
 
         /// <inheritdoc/>
@@ -21,7 +21,7 @@ namespace BatchPool.Tasks.BatchTasks
 
         /// <inheritdoc/>
         public override bool IsCancelled => 
-            _batchTaskWithTaskDto.Task == null;
+            _taskContainer.Task == null;
 
         /// <inheritdoc/>
         public override async Task WaitForTaskAsync()
@@ -31,7 +31,7 @@ namespace BatchPool.Tasks.BatchTasks
                 return;
             }
 
-            await WaitForTaskAndCallbackAsync(_batchTaskWithTaskDto.Task)
+            await WaitForTaskAndCallbackAsync(_taskContainer.Task)
                 .ConfigureAwait(false);
         }
 
@@ -45,8 +45,8 @@ namespace BatchPool.Tasks.BatchTasks
                     return true;
                 }
 
-                bool isTaskActive = _batchTaskWithTaskDto.Task != null
-                    && !TaskUtil.IsTaskRunningOrCompleted(_batchTaskWithTaskDto.Task);
+                bool isTaskActive = _taskContainer.Task != null
+                    && !TaskUtil.IsTaskRunningOrCompleted(_taskContainer.Task);
 
                 if (!isTaskActive)
                 {
@@ -65,14 +65,14 @@ namespace BatchPool.Tasks.BatchTasks
                 return;
             }
 
-            await StartTaskAndCallBackAndWaitAsync(_batchTaskWithTaskDto.Task)
+            await StartTaskAndCallBackAndWaitAsync(_taskContainer.Task)
                 .ConfigureAwait(false);
         }
 
         private protected override bool IsTaskCompleted() => 
-            _batchTaskWithTaskDto.Task?.IsCompleted ?? false;
+            _taskContainer.Task?.IsCompleted ?? false;
 
         private void HandleCancellation() => 
-            _batchTaskWithTaskDto.Task = null;
+            _taskContainer.Task = null;
     }
 }

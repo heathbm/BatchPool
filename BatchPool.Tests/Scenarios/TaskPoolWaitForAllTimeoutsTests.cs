@@ -11,7 +11,7 @@ namespace BatchPool.UnitTests.Scenarios
         {
             var progressTracker = new ProgressTracker();
             int batchSize = 1;
-            var batchPool = new BatchPool(batchSize, isEnabled: true);
+            var batchPool = new BatchPoolContainer(batchSize, isEnabled: true);
 
             var task = async () =>
             {
@@ -35,7 +35,7 @@ namespace BatchPool.UnitTests.Scenarios
         {
             var progressTracker = new ProgressTracker();
             int batchSize = 1;
-            var batchPool = new BatchPool(batchSize, isEnabled: true);
+            var batchPool = new BatchPoolContainer(batchSize, isEnabled: true);
 
             var task = async () =>
             {
@@ -59,7 +59,7 @@ namespace BatchPool.UnitTests.Scenarios
         {
             var progressTracker = new ProgressTracker();
             int batchSize = 1;
-            var batchPool = new BatchPool(batchSize, isEnabled: true);
+            var batchPool = new BatchPoolContainer(batchSize, isEnabled: true);
 
             var task = async () =>
             {

@@ -6,9 +6,10 @@ using BatchPool.Tasks.Callbacks;
 namespace BatchPool
 {
     /// <summary>
-    /// Run tasks in a guaranteed order
+    /// A generic task batching and management library.
+    /// Tasks are executed in the order in which they are received.
     /// </summary>
-    public class BatchPool
+    public class BatchPoolContainer
     {
         // External Config
 
@@ -17,15 +18,15 @@ namespace BatchPool
         /// </summary>
         private int _batchSize;
         /// <summary>
-        /// Is the BatchPool enabled from an external consumer perspective.
+        /// Is the BatchPoolContainer enabled from an external consumer perspective.
         /// </summary>
         private bool _isEnabled;
         /// <summary>
-        /// If enabled and a running task is added to the BatchPool, an Exception will be thrown.
+        /// If enabled and a running task is added to the BatchPoolContainer, an Exception will be thrown.
         /// </summary>
         private readonly bool _inactiveTaskValidation;
         /// <summary>
-        /// A Cancellation Token that will permanently cancel the BatchPool.
+        /// A Cancellation Token that will permanently cancel the BatchPoolContainer.
         /// </summary>
         private readonly CancellationToken _cancellationToken;
 
@@ -36,37 +37,37 @@ namespace BatchPool
         /// </summary>
         private SemaphoreSlim _batchRateLimitSemaphore;
         /// <summary>
-        /// Used to pause all activity in the BatchPool to change the size of _batchSize />.
+        /// Used to pause all activity in the BatchPoolContainer to change the size of _batchSize />.
         /// </summary>
         private readonly SemaphoreSlim _batchUpdateSemaphore;
         /// <summary>
         /// Tracks pending tasks (and running tasks if _inactiveTaskValidation is disabled) that have not be transitioned to the running tasks list _runningTasks />.
         /// </summary>
-        private readonly ConcurrentQueue<BatchTask> _unprocessedTasks;
+        private readonly ConcurrentQueue<BatchPoolTask> _unprocessedTasks;
         /// <summary>
         /// Tracks running tasks so they can be awaited or cancelled as required.
         /// </summary>
-        private readonly HashSet<BatchTask> _runningTasks;
+        private readonly HashSet<BatchPoolTask> _runningTasks;
 
         // Internal Stateful fields
 
         /// <summary>
-        /// Are tasks actively being processed. The BatchPool controls this field to perform maintenance.
+        /// Are tasks actively being processed. The BatchPoolContainer controls this field to perform maintenance.
         /// </summary>
         private bool _isRunning;
         /// <summary>
-        /// Is the BatchPool halted (waiting for all current tasks to finish in order to update the batch size).
+        /// Is the BatchPoolContainer halted (waiting for all current tasks to finish in order to update the batch size).
         /// </summary>
         private bool _isUpdatingBatchSize;
 
         /// <summary>
-        /// Create a BatchPool.
+        /// Create a BatchPoolContainer.
         /// </summary>
         /// <param name="batchSize">Max number of tasks that will run concurrently.</param>
-        /// <param name="isEnabled">Is the BatchPool enabled by default. If false, the BatchPool must be started manually.</param>
-        /// <param name="inactiveTaskValidation">If enabled and a running task is added to the BatchPool, an Exception will be thrown</param>
-        /// <param name="cancellationToken">A Cancellation Token that will permanently cancel the BatchPool.</param>
-        public BatchPool(int batchSize, bool isEnabled = true, bool inactiveTaskValidation = false, CancellationToken cancellationToken = default)
+        /// <param name="isEnabled">Is the BatchPoolContainer enabled by default. If false, the BatchPoolContainer must be started manually.</param>
+        /// <param name="inactiveTaskValidation">If enabled and a running task is added to the BatchPoolContainer, an Exception will be thrown</param>
+        /// <param name="cancellationToken">A Cancellation Token that will permanently cancel the BatchPoolContainer.</param>
+        public BatchPoolContainer(int batchSize, bool isEnabled = true, bool inactiveTaskValidation = false, CancellationToken cancellationToken = default)
         {
             // Init config
             _batchSize = batchSize;
@@ -91,7 +92,7 @@ namespace BatchPool
         }
 
         /// <summary>
-        /// Resume processing tasks and wait for all tasks that exist in the BatchPool at the time of calling this method. If already running, nothing will change.
+        /// Resume processing tasks and wait for all tasks that exist in the BatchPoolContainer at the time of calling this method. If already running, nothing will change.
         /// </summary>
         /// <returns></returns>
         public async Task ResumeAndWaitForAllAsync()
@@ -103,7 +104,7 @@ namespace BatchPool
         }
 
         /// <summary>
-        /// Prevent new tasks being processed. Pending tasks will wait until the BatchPool is resumed.
+        /// Prevent new tasks being processed. Pending tasks will wait until the BatchPoolContainer is resumed.
         /// </summary>
         public void Pause() => _isEnabled = false;
 
@@ -113,11 +114,11 @@ namespace BatchPool
         public int GetPendingTaskCount() => _unprocessedTasks.Count(a => !a.IsCancelled);
 
         /// <summary>
-        /// Wait for all tasks that exist in the BatchPool at the time of calling this method.
+        /// Wait for all tasks that exist in the BatchPoolContainer at the time of calling this method.
         /// </summary>
         public async Task WaitForAllAsync()
         {
-            List<BatchTask> pendingTasks;
+            List<BatchPoolTask> pendingTasks;
 
             lock (_runningTasks)
             {
@@ -133,7 +134,7 @@ namespace BatchPool
         }
 
         /// <summary>
-        /// Wait for all tasks that exist in the BatchPool at the time of calling this method.
+        /// Wait for all tasks that exist in the BatchPoolContainer at the time of calling this method.
         /// </summary>
         /// <param name="timeoutInMilliseconds">Max time to wait for all tasks to finish.</param>
         /// <returns>Returns true if all tasks are completed before the timout occurs, false if the timeout occurs</returns>
@@ -143,7 +144,7 @@ namespace BatchPool
             .ConfigureAwait(false);
 
         /// <summary>
-        /// Wait for all tasks that exist in the BatchPool at the time of calling this method.
+        /// Wait for all tasks that exist in the BatchPoolContainer at the time of calling this method.
         /// </summary>
         /// <param name="timeout">Max time to wait for all tasks to finish.</param>
         /// <returns>Returns true if all tasks are completed before the timout occurs, false if the timeout occurs</returns>
@@ -153,7 +154,7 @@ namespace BatchPool
             .ConfigureAwait(false);
 
         /// <summary>
-        /// Wait for all tasks that exist in the BatchPool at the time of calling this method.
+        /// Wait for all tasks that exist in the BatchPoolContainer at the time of calling this method.
         /// </summary>
         /// <param name="cancellationToken">Cancellation token to cancel waiting for all tasks to complete.</param>
         /// <returns>Returns true if all tasks are completed, false if the cancellation token is cancelled.</returns>
@@ -174,7 +175,7 @@ namespace BatchPool
             .ConfigureAwait(false);
 
         /// <summary>
-        /// Wait for all tasks that exist in the BatchPool at the time of calling this method.
+        /// Wait for all tasks that exist in the BatchPoolContainer at the time of calling this method.
         /// </summary>
         /// <param name="timeout">Max time to wait for all tasks to finish.</param>
         /// <param name="cancellationToken">Cancellation token to cancel waiting for all tasks to complete.</param>
@@ -188,9 +189,9 @@ namespace BatchPool
         /// Wait for all tasks to finish.
         /// </summary>
         /// <param name="tasks">Tasks that will be waited for the finish.</param>
-        public static async Task WaitForAllAsync(IEnumerable<BatchTask> tasks)
+        public static async Task WaitForAllAsync(IEnumerable<BatchPoolTask> tasks)
         {
-            foreach (BatchTask pendingTask in tasks)
+            foreach (BatchPoolTask pendingTask in tasks)
             {
                 // This null check can prevent race conditions in rare scenarios.
                 if (pendingTask == null)
@@ -205,7 +206,7 @@ namespace BatchPool
         }
 
         /// <summary>
-        /// Update the size of the BatchPool. Waits for all currently running tasks to finish before updating the BatchPool. Internal logic will prevent running this method concurrently.
+        /// Update the size of the BatchPoolContainer. Waits for all currently running tasks to finish before updating the BatchPoolContainer. Internal logic will prevent running this method concurrently.
         /// </summary>
         /// <param name="newBatchSize">The new batch size, this controls the number of tasks that can be run concurrently. Must be more than 0.</param>
         /// <exception cref="ArgumentException">Throws an ArgumentException if <paramref name="newBatchSize" /> is less than 1.</exception>
@@ -267,7 +268,7 @@ namespace BatchPool
         }
 
         /// <summary>
-        /// Update the size of the BatchPool in the background. Waits for all currently running tasks to finish before updating the BatchPool. Internal logic will prevent running this method concurrently.
+        /// Update the size of the BatchPoolContainer in the background. Waits for all currently running tasks to finish before updating the BatchPoolContainer. Internal logic will prevent running this method concurrently.
         /// </summary>
         /// <param name="newBatchSize">The new batch size, this controls the number of tasks that can be run concurrently. Must be more than 0.</param>
         /// <exception cref="ArgumentException">Throws an ArgumentException if <paramref name="newBatchSize" /> is less than 1.</exception>
@@ -284,15 +285,15 @@ namespace BatchPool
         /// <summary>
         /// Cancels a task if it has not yet started. Returns true if successfully cancelled, false if could not be cancelled.
         /// </summary>
-        public static bool RemoveAndCancel(BatchTask batchTask) => 
-            batchTask.Cancel();
+        public static bool RemoveAndCancel(BatchPoolTask batchPoolTask) => 
+            batchPoolTask.Cancel();
 
         /// <summary>
         /// Cancels task that have not yet started.
         /// </summary>
-        public static void RemoveAndCancel(IEnumerable<BatchTask> batchTasks)
+        public static void RemoveAndCancel(IEnumerable<BatchPoolTask> batchTasks)
         {
-            foreach (BatchTask batchTask in batchTasks)
+            foreach (BatchPoolTask batchTask in batchTasks)
             {
                 batchTask.Cancel();
             }
@@ -307,7 +308,7 @@ namespace BatchPool
             {
                 while (!_unprocessedTasks.IsEmpty)
                 {
-                    bool result = _unprocessedTasks.TryDequeue(out BatchTask? batchTask);
+                    bool result = _unprocessedTasks.TryDequeue(out BatchPoolTask? batchTask);
                     if (result)
                     {
                         batchTask?.Cancel();
@@ -317,82 +318,82 @@ namespace BatchPool
         }
 
         /// <summary>
-        /// Add a task to the BatchPool. The task will automatically start when the it can if the BatchPool is enabled.
+        /// Add a task to the BatchPoolContainer. The task will automatically start when the it can if the BatchPoolContainer is enabled.
         /// </summary>
-        public BatchTask Add(Task task) => 
+        public BatchPoolTask Add(Task task) => 
             AddTask(task);
 
         /// <summary>
-        /// Add a task to the BatchPool. The task will automatically start when the it can if the BatchPool is enabled.
+        /// Add a task to the BatchPoolContainer. The task will automatically start when the it can if the BatchPoolContainer is enabled.
         /// </summary>
-        public BatchTask Add(Task task, Task callback, bool waitForCallback = false) => 
+        public BatchPoolTask Add(Task task, Task callback, bool waitForCallback = false) => 
             AddTask(task, taskCallback: callback, waitForCallback: waitForCallback);
 
         /// <summary>
-        /// Add a task to the BatchPool. The task will automatically start when the it can if the BatchPool is enabled.
+        /// Add a task to the BatchPoolContainer. The task will automatically start when the it can if the BatchPoolContainer is enabled.
         /// </summary>
-        public BatchTask Add(Task task, Func<Task> callback, bool waitForCallback = false) => 
+        public BatchPoolTask Add(Task task, Func<Task> callback, bool waitForCallback = false) => 
             AddTask(task, functionCallback: callback, waitForCallback: waitForCallback);
 
         /// <summary>
-        /// Add a task to the BatchPool. The task will automatically start when the it can if the BatchPool is enabled.
+        /// Add a task to the BatchPoolContainer. The task will automatically start when the it can if the BatchPoolContainer is enabled.
         /// </summary>
-        public BatchTask Add(Task task, Action callback, bool waitForCallback = false) => 
+        public BatchPoolTask Add(Task task, Action callback, bool waitForCallback = false) => 
             AddTask(task, actionCallback: callback, waitForCallback: waitForCallback);
 
         /// <summary>
-        /// Add a task to the BatchPool. The task will automatically start when the it can if the BatchPool is enabled.
+        /// Add a task to the BatchPoolContainer. The task will automatically start when the it can if the BatchPoolContainer is enabled.
         /// </summary>
-        public BatchTask Add(Func<Task> function) => 
+        public BatchPoolTask Add(Func<Task> function) => 
             AddFunc(function);
 
         /// <summary>
-        /// Add a task to the BatchPool. The task will automatically start when the it can if the BatchPool is enabled.
+        /// Add a task to the BatchPoolContainer. The task will automatically start when the it can if the BatchPoolContainer is enabled.
         /// </summary>
-        public BatchTask Add(Func<Task> function, Task callback, bool waitForCallback = false) => 
+        public BatchPoolTask Add(Func<Task> function, Task callback, bool waitForCallback = false) => 
             AddFunc(function, taskCallback: callback, waitForCallback: waitForCallback);
 
         /// <summary>
-        /// Add a task to the BatchPool. The task will automatically start when the it can if the BatchPool is enabled.
+        /// Add a task to the BatchPoolContainer. The task will automatically start when the it can if the BatchPoolContainer is enabled.
         /// </summary>
-        public BatchTask Add(Func<Task> function, Func<Task> callback, bool waitForCallback = false) => 
+        public BatchPoolTask Add(Func<Task> function, Func<Task> callback, bool waitForCallback = false) => 
             AddFunc(function, functionCallback: callback, waitForCallback: waitForCallback);
 
         /// <summary>
-        /// Add a task to the BatchPool. The task will automatically start when the it can if the BatchPool is enabled.
+        /// Add a task to the BatchPoolContainer. The task will automatically start when the it can if the BatchPoolContainer is enabled.
         /// </summary>
-        public BatchTask Add(Func<Task> function, Action callback, bool waitForCallback = false) =>
+        public BatchPoolTask Add(Func<Task> function, Action callback, bool waitForCallback = false) =>
             AddFunc(function, actionCallback: callback, waitForCallback: waitForCallback);
 
         /// <summary>
-        /// Add a task to the BatchPool. The task will automatically start when the it can if the BatchPool is enabled.
+        /// Add a task to the BatchPoolContainer. The task will automatically start when the it can if the BatchPoolContainer is enabled.
         /// </summary>
-        public BatchTask Add(Action action) => 
+        public BatchPoolTask Add(Action action) => 
             AddTask(new Task(action));
 
         /// <summary>
-        /// Add a task to the BatchPool. The task will automatically start when the it can if the BatchPool is enabled.
+        /// Add a task to the BatchPoolContainer. The task will automatically start when the it can if the BatchPoolContainer is enabled.
         /// </summary>
-        public BatchTask Add(Action action, Task callback, bool waitForCallback = false) => 
+        public BatchPoolTask Add(Action action, Task callback, bool waitForCallback = false) => 
             AddTask(new Task(action), taskCallback: callback, waitForCallback: waitForCallback);
 
         /// <summary>
-        /// Add a task to the BatchPool. The task will automatically start when the it can if the BatchPool is enabled.
+        /// Add a task to the BatchPoolContainer. The task will automatically start when the it can if the BatchPoolContainer is enabled.
         /// </summary>
-        public BatchTask Add(Action action, Func<Task> callback, bool waitForCallback = false) => 
+        public BatchPoolTask Add(Action action, Func<Task> callback, bool waitForCallback = false) => 
             AddTask(new Task(action), functionCallback: callback, waitForCallback: waitForCallback);
 
         /// <summary>
-        /// Add a task to the BatchPool. The task will automatically start when the it can if the BatchPool is enabled.
+        /// Add a task to the BatchPoolContainer. The task will automatically start when the it can if the BatchPoolContainer is enabled.
         /// </summary>
-        public BatchTask Add(Action action, Action callback, bool waitForCallback = false) => 
+        public BatchPoolTask Add(Action action, Action callback, bool waitForCallback = false) => 
             AddTask(new Task(action), actionCallback: callback, waitForCallback: waitForCallback);
         /// <summary>
-        /// Add a tasks to the BatchPool. The tasks will automatically start when the it can if the BatchPool is enabled.
+        /// Add a tasks to the BatchPoolContainer. The tasks will automatically start when the it can if the BatchPoolContainer is enabled.
         /// </summary>
-        public List<BatchTask> Add(IEnumerable<Task> tasks)
+        public List<BatchPoolTask> Add(IEnumerable<Task> tasks)
         {
-            List<BatchTask> batchTasks = new();
+            List<BatchPoolTask> batchTasks = new();
 
             foreach (Task task in tasks)
             {
@@ -403,11 +404,11 @@ namespace BatchPool
         }
 
         /// <summary>
-        /// Add a tasks to the BatchPool. The tasks will automatically start when the it can if the BatchPool is enabled.
+        /// Add a tasks to the BatchPoolContainer. The tasks will automatically start when the it can if the BatchPoolContainer is enabled.
         /// </summary>
-        public List<BatchTask> Add(IEnumerable<Func<Task>> functions)
+        public List<BatchPoolTask> Add(IEnumerable<Func<Task>> functions)
         {
-            List<BatchTask> batchTasks = new();
+            List<BatchPoolTask> batchTasks = new();
 
             foreach (Func<Task> function in functions)
             {
@@ -418,11 +419,11 @@ namespace BatchPool
         }
 
         /// <summary>
-        /// Add a tasks to the BatchPool. The tasks will automatically start when the it can if the BatchPool is enabled.
+        /// Add a tasks to the BatchPoolContainer. The tasks will automatically start when the it can if the BatchPoolContainer is enabled.
         /// </summary>
-        public List<BatchTask> Add(IEnumerable<Action> functions)
+        public List<BatchPoolTask> Add(IEnumerable<Action> functions)
         {
-            List<BatchTask> batchTasks = new();
+            List<BatchPoolTask> batchTasks = new();
 
             foreach (Action function in functions)
             {
@@ -433,7 +434,7 @@ namespace BatchPool
         }
 
         /// <summary>
-        /// Ready = true if the BatchPool is enabled and is not currently processing new tasks
+        /// Ready = true if the BatchPoolContainer is enabled and is not currently processing new tasks
         /// </summary>
         private bool IsReady() => _isEnabled && !_isRunning;
 
@@ -453,7 +454,7 @@ namespace BatchPool
         }
 
         /// <summary>
-        /// Primary control loop that will not exit unless the BatchPool is cancelled or all pending tasks are finished.
+        /// Primary control loop that will not exit unless the BatchPoolContainer is cancelled or all pending tasks are finished.
         /// </summary>
         private async Task RunBatchPool()
         {
@@ -474,27 +475,27 @@ namespace BatchPool
 
                 if (_isUpdatingBatchSize)
                 {
-                    // Wait for a BatchPool size update to finish.
+                    // Wait for a BatchPoolContainer size update to finish.
                     await _batchUpdateSemaphore
                         .WaitAsync(_cancellationToken)
                         .ConfigureAwait(false);
                     _batchUpdateSemaphore.Release();
                 }
 
-                // Wait for the BatchPool capacity to not be exceeded to process a new task.
+                // Wait for the BatchPoolContainer capacity to not be exceeded to process a new task.
                 await _batchRateLimitSemaphore
                     .WaitAsync(_cancellationToken)
                     .ConfigureAwait(false);
 
                 if (!_isEnabled)
                 {
-                    // Graceful exit of the running loop due to the BatchPool being paused.
+                    // Graceful exit of the running loop due to the BatchPoolContainer being paused.
                     _batchRateLimitSemaphore.Release();
                     _isRunning = false;
                     return;
                 }
 
-                bool success = _unprocessedTasks.TryDequeue(out BatchTask? currentTask);
+                bool success = _unprocessedTasks.TryDequeue(out BatchPoolTask? currentTask);
                 if (!success
                     || currentTask == null)
                 {
@@ -509,11 +510,11 @@ namespace BatchPool
             _isRunning = false;
         }
 
-        private async Task RunAndWaitForTask(BatchTask currentTask)
+        private async Task RunAndWaitForTask(BatchPoolTask currentPoolTask)
         {
             try
             {
-                await currentTask
+                await currentPoolTask
                     .StartAndWaitAsync()
                     .ConfigureAwait(false);
             }
@@ -522,17 +523,17 @@ namespace BatchPool
                 _batchRateLimitSemaphore.Release();
                 lock (_runningTasks)
                 {
-                    _runningTasks.Remove(currentTask);
+                    _runningTasks.Remove(currentPoolTask);
                 }
             }
         }
 
-        private BatchTask AddTask(Task task, Task? taskCallback = null, Func<Task>? functionCallback = null, Action? actionCallback = null, bool waitForCallback = false)
+        private BatchPoolTask AddTask(Task task, Task? taskCallback = null, Func<Task>? functionCallback = null, Action? actionCallback = null, bool waitForCallback = false)
         {
             ThrowTokenCancelledIfCancelled();
             ThrowArgumentExceptionIfValidationIsEnabledAndFails(task);
-            TaskBatchTask batchTask = new(task, GetCallback(taskCallback, functionCallback, actionCallback, waitForCallback));
-            return AddTask(batchTask);
+            PoolTaskBatchPoolTask batchPoolTask = new(task, GetCallback(taskCallback, functionCallback, actionCallback, waitForCallback));
+            return AddTask(batchPoolTask);
         }
 
         private static ICallback? GetCallback(Task? taskCallback = null, Func<Task>? functionCallback = null, Action? actionCallback = null, bool waitForCallback = false)
@@ -555,21 +556,21 @@ namespace BatchPool
             return null;
         }
 
-        private BatchTask AddFunc(Func<Task> function, Task? taskCallback = null, Func<Task>? functionCallback = null, Action? actionCallback = null, bool waitForCallback = false)
+        private BatchPoolTask AddFunc(Func<Task> function, Task? taskCallback = null, Func<Task>? functionCallback = null, Action? actionCallback = null, bool waitForCallback = false)
         {
             ThrowTokenCancelledIfCancelled();
-            FunctionBatchTask batchTask = new(function, GetCallback(taskCallback, functionCallback, actionCallback, waitForCallback));
-            return AddTask(batchTask);
+            FunctionBatchPoolTask batchPoolTask = new(function, GetCallback(taskCallback, functionCallback, actionCallback, waitForCallback));
+            return AddTask(batchPoolTask);
         }
 
-        private BatchTask AddTask(BatchTask batchTask)
+        private BatchPoolTask AddTask(BatchPoolTask batchPoolTask)
         {
             lock (_runningTasks)
             {
-                _runningTasks.Add(batchTask);
+                _runningTasks.Add(batchPoolTask);
             }
 
-            _unprocessedTasks.Enqueue(batchTask);
+            _unprocessedTasks.Enqueue(batchPoolTask);
 
             if (IsReady())
             {
@@ -577,7 +578,7 @@ namespace BatchPool
                     .ConfigureAwait(false);
             }
 
-            return batchTask;
+            return batchPoolTask;
         }
 
         private void ThrowArgumentExceptionIfValidationIsEnabledAndFails(Task? task)

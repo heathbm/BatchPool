@@ -12,7 +12,7 @@ namespace BatchPool.UnitTests.Scenarios
         public static void RunningTask_WithRunningTaskValidation_ThrowsException()
         {
             int batchSize = 1;
-            var batchPool = new BatchPool(batchSize, isEnabled: true, inactiveTaskValidation: true);
+            var batchPool = new BatchPoolContainer(batchSize, isEnabled: true, inactiveTaskValidation: true);
 
             var task = new Task(() =>
             {
@@ -28,7 +28,7 @@ namespace BatchPool.UnitTests.Scenarios
         {
             int numberOfTasks = 100;
             int batchSize = 5;
-            var batchPool = new BatchPool(batchSize, isEnabled: false, inactiveTaskValidation: true);
+            var batchPool = new BatchPoolContainer(batchSize, isEnabled: false, inactiveTaskValidation: true);
             var batchTasks = new List<Task>();
 
             for (int taskIndex = 0; taskIndex < numberOfTasks; taskIndex++)
@@ -46,7 +46,7 @@ namespace BatchPool.UnitTests.Scenarios
         {
             int numberOfTasks = 100;
             int batchSize = 5;
-            var batchPool = new BatchPool(batchSize, isEnabled: false, inactiveTaskValidation: true);
+            var batchPool = new BatchPoolContainer(batchSize, isEnabled: false, inactiveTaskValidation: true);
             var batchTasks = new List<Task>();
 
             for (int taskIndex = 0; taskIndex < numberOfTasks; taskIndex++)
@@ -64,7 +64,7 @@ namespace BatchPool.UnitTests.Scenarios
         {
             int numberOfTasks = 100;
             int batchSize = 5;
-            var batchPool = new BatchPool(batchSize, isEnabled: false, inactiveTaskValidation: true);
+            var batchPool = new BatchPoolContainer(batchSize, isEnabled: false, inactiveTaskValidation: true);
             var batchTasks = new List<Task>();
 
             for (int taskIndex = 0; taskIndex < numberOfTasks; taskIndex++)
@@ -82,7 +82,7 @@ namespace BatchPool.UnitTests.Scenarios
         public static void RunningTask_WithoutRunningTaskValidation_DoesNotThrowException()
         {
             int batchSize = 1;
-            var batchPool = new BatchPool(batchSize, isEnabled: true, inactiveTaskValidation: false);
+            var batchPool = new BatchPoolContainer(batchSize, isEnabled: true, inactiveTaskValidation: false);
 
             var task = new Task(() =>
             {
@@ -99,7 +99,7 @@ namespace BatchPool.UnitTests.Scenarios
         {
             int numberOfTasks = 100;
             int batchSize = 5;
-            var batchPool = new BatchPool(batchSize, isEnabled: false, inactiveTaskValidation: false);
+            var batchPool = new BatchPoolContainer(batchSize, isEnabled: false, inactiveTaskValidation: false);
             var batchTasks = new List<Task>();
 
             for (int taskIndex = 0; taskIndex < numberOfTasks; taskIndex++)
@@ -118,7 +118,7 @@ namespace BatchPool.UnitTests.Scenarios
         {
             int numberOfTasks = 100;
             int batchSize = 5;
-            var batchPool = new BatchPool(batchSize, isEnabled: false, inactiveTaskValidation: false);
+            var batchPool = new BatchPoolContainer(batchSize, isEnabled: false, inactiveTaskValidation: false);
             var batchTasks = new List<Task>();
 
             for (int taskIndex = 0; taskIndex < numberOfTasks; taskIndex++)
@@ -137,7 +137,7 @@ namespace BatchPool.UnitTests.Scenarios
         {
             int numberOfTasks = 100;
             int batchSize = 5;
-            var batchPool = new BatchPool(batchSize, isEnabled: false, inactiveTaskValidation: false);
+            var batchPool = new BatchPoolContainer(batchSize, isEnabled: false, inactiveTaskValidation: false);
             var batchTasks = new List<Task>();
 
             for (int taskIndex = 0; taskIndex < numberOfTasks; taskIndex++)

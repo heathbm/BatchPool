@@ -16,8 +16,8 @@ namespace BatchPool.UnitTests.Scenarios
             int numberOfTasks = 100;
             var progressTracker = new ProgressTracker();
             int batchSize = 5;
-            var batchPool = new BatchPool(batchSize, isEnabled: false);
-            var batchTasks = new List<BatchTask>();
+            var batchPool = new BatchPoolContainer(batchSize, isEnabled: false);
+            var batchTasks = new List<BatchPoolTask>();
 
             var task = new Task(() => progressTracker.IncrementProgress());
             batchTasks.Add(batchPool.Add(task));
@@ -45,8 +45,8 @@ namespace BatchPool.UnitTests.Scenarios
             int numberOfTasks = 100;
             var progressTracker = new ProgressTracker();
             int batchSize = 5;
-            var batchPool = new BatchPool(batchSize, isEnabled: false);
-            var batchTasks = new List<BatchTask>();
+            var batchPool = new BatchPoolContainer(batchSize, isEnabled: false);
+            var batchTasks = new List<BatchPoolTask>();
 
             var task = new Task(async () => await progressTracker.IncrementProgressAsync());
             batchTasks.Add(batchPool.Add(task));
@@ -75,8 +75,8 @@ namespace BatchPool.UnitTests.Scenarios
             int numberOfTasks = 100;
             var progressTracker = new ProgressTracker();
             int batchSize = 5;
-            var batchPool = new BatchPool(batchSize, isEnabled: false);
-            var batchTasks = new List<BatchTask>();
+            var batchPool = new BatchPoolContainer(batchSize, isEnabled: false);
+            var batchTasks = new List<BatchPoolTask>();
 
             Action task = () => progressTracker.IncrementProgress();
             batchTasks.Add(batchPool.Add(task));

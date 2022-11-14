@@ -14,7 +14,7 @@ namespace BatchPool.UnitTests.BasicTests
             int taskProgress = 0;
             int batchSize = 5;
 
-            var batchPoolManager = new BatchPoolManager();
+            var batchPoolManager = new BatchPoolContainerManager();
 
             var batchPool = batchPoolManager.CreateAndRegisterBatch("123", batchSize);
 
@@ -39,10 +39,10 @@ namespace BatchPool.UnitTests.BasicTests
             int taskProgress = 0;
             int batchSize = 5;
 
-            var batchPoolManager = new BatchPoolManager();
+            var batchPoolManager = new BatchPoolContainerManager();
 
             batchPoolManager.CreateAndRegisterBatch("123", batchSize);
-            var isBatchPoolFound = batchPoolManager.TryGetBatchPool("123", out BatchPool? batchPool);
+            var isBatchPoolFound = batchPoolManager.TryGetBatchPool("123", out BatchPoolContainer? batchPool);
             Assert.True(isBatchPoolFound);
 
             for (int taskIndex = 0; taskIndex < numberOfTasks; taskIndex++)
@@ -66,7 +66,7 @@ namespace BatchPool.UnitTests.BasicTests
             int taskProgress = 0;
             int batchSize = 5;
 
-            var batchPoolManager = new BatchPoolManager();
+            var batchPoolManager = new BatchPoolContainerManager();
 
             var batchPool = batchPoolManager.CreateAndRegisterBatch("123", batchSize);
 
@@ -88,7 +88,7 @@ namespace BatchPool.UnitTests.BasicTests
         {
             int batchSize = 5;
 
-            var batchPoolManager = new BatchPoolManager();
+            var batchPoolManager = new BatchPoolContainerManager();
 
             var batchPool1 = batchPoolManager.CreateAndRegisterBatch("123", batchSize);
             var batchPool2 = batchPoolManager.CreateAndRegisterBatch("123", batchSize);
@@ -101,11 +101,11 @@ namespace BatchPool.UnitTests.BasicTests
         {
             int batchSize = 5;
 
-            var batchPoolManager = new BatchPoolManager();
+            var batchPoolManager = new BatchPoolContainerManager();
 
             var batchPool1 = batchPoolManager.CreateAndRegisterBatch("123", batchSize);
             var batchPool2 = batchPoolManager.CreateAndRegisterBatch("123", batchSize);
-            var isBatchPoolFound = batchPoolManager.TryGetBatchPool("123", out BatchPool? batchPoolR);
+            var isBatchPoolFound = batchPoolManager.TryGetBatchPool("123", out BatchPoolContainer? batchPoolR);
             Assert.True(isBatchPoolFound);
 
             Assert.Equal(batchPool1, batchPoolR);
