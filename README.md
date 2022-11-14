@@ -1,6 +1,9 @@
 # BatchPool
 
-[![Build & Tests](https://github.com/heathbm/BatchPool/actions/workflows/dotnet.yml/badge.svg)](https://github.com/heathbm/BatchPool/actions/workflows/dotnet.yml)
+[![Build & Tests](https://github.com/heathbm/BatchPool/actions/workflows/dotnet.yml/badge.svg)](https://github.com/heathbm/BatchPool/actions/workflows/dotnet.yml)  
+[![NuGet Version](https://img.shields.io/nuget/v/BatchPool)](https://www.nuget.org/packages/BatchPool)  
+[![NuGet Downlaods](https://img.shields.io/nuget/dt/BatchPool?label=nuget%20downloads)](https://www.nuget.org/packages/BatchPool)  
+[![GitHub License](https://img.shields.io/github/license/heathbm/batchpool)](https://github.com/heathbm/BatchPool/blob/master/LICENSE)  
 
 The one-stop generic task batching and management library.  
 Contributions are welcome to add features, flexibility, performance test coverage...  
