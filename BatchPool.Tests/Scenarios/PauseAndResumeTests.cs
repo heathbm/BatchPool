@@ -13,13 +13,13 @@ namespace BatchPool.UnitTests.Scenarios
             var progressTracker = new ProgressTracker();
             int batchSize = 1;
             var shortDelay = TimeSpan.FromMilliseconds(10);
-            // Disable the BatchPool so we can verify both tasks have been added before it starts
+            // Disable the BatchPoolContainer so we can verify both tasks have been added before it starts
             bool isEnabled = false;
-            var batchPool = new BatchPool(batchSize, isEnabled);
+            var batchPool = new BatchPoolContainer(batchSize, isEnabled);
 
             var firstTask = batchPool.Add(async () =>
             {
-                // Create a delay so we can pause the BatchPool before this ends
+                // Create a delay so we can pause the BatchPoolContainer before this ends
                 await Task.Delay(shortDelay);
                 progressTracker.IncrementProgress();
             });
@@ -38,7 +38,7 @@ namespace BatchPool.UnitTests.Scenarios
             // Ensure both tasks are waiting
             Assert.Equal(2, batchPool.GetPendingTaskCount());
 
-            // Start the BatchPool
+            // Start the BatchPoolContainer
             batchPool.ResumeAndForget();
             // Immediately pause it to prevent the second task from starting
             batchPool.Pause();
@@ -68,14 +68,14 @@ namespace BatchPool.UnitTests.Scenarios
             var progressTracker = new ProgressTracker();
             int batchSize = 1;
             var shortDelay = TimeSpan.FromMilliseconds(10);
-            // Disable the BatchPool so we can verify both tasks have been added before it starts
+            // Disable the BatchPoolContainer so we can verify both tasks have been added before it starts
             bool isEnabled = true;
-            var batchPool = new BatchPool(batchSize, isEnabled);
+            var batchPool = new BatchPoolContainer(batchSize, isEnabled);
             batchPool.Pause();
 
             var firstTask = batchPool.Add(async () =>
             {
-                // Create a delay so we can pause the BatchPool before this ends
+                // Create a delay so we can pause the BatchPoolContainer before this ends
                 await Task.Delay(shortDelay);
                 progressTracker.IncrementProgress();
             });
@@ -94,7 +94,7 @@ namespace BatchPool.UnitTests.Scenarios
             // Ensure both tasks are waiting
             Assert.Equal(2, batchPool.GetPendingTaskCount());
 
-            // Start the BatchPool
+            // Start the BatchPoolContainer
             await batchPool.ResumeAndWaitForAllAsync();
 
             // Ensure all tasks are complete and no tasks are waiting
@@ -110,13 +110,13 @@ namespace BatchPool.UnitTests.Scenarios
             var progressTracker = new ProgressTracker();
             int batchSize = 1;
             var shortDelay = TimeSpan.FromMilliseconds(10);
-            // Disable the BatchPool so we can verify both tasks have been added before it starts
+            // Disable the BatchPoolContainer so we can verify both tasks have been added before it starts
             bool isEnabled = true;
-            var batchPool = new BatchPool(batchSize, isEnabled);
+            var batchPool = new BatchPoolContainer(batchSize, isEnabled);
 
             var firstTask = batchPool.Add(async () =>
             {
-                // Create a delay so we can pause the BatchPool before this ends
+                // Create a delay so we can pause the BatchPoolContainer before this ends
                 await Task.Delay(shortDelay);
                 progressTracker.IncrementProgress();
             });
@@ -137,7 +137,7 @@ namespace BatchPool.UnitTests.Scenarios
             // Ensure only 1 task is waiting
             Assert.Equal(1, batchPool.GetPendingTaskCount());
 
-            // Start the BatchPool
+            // Start the BatchPoolContainer
             await batchPool.ResumeAndWaitForAllAsync();
 
             // Ensure all tasks are complete and no tasks are waiting

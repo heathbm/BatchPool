@@ -25,23 +25,23 @@ namespace BatchPool.UnitTests.Utilities
             return () => progressTracker.IncrementProgress();
         }
 
-        internal static async Task StartTasksIfRequiredAndWaitForAllTasksToComplete(bool isEnabled, bool runAndForget, BatchPool batchPool)
+        internal static async Task StartTasksIfRequiredAndWaitForAllTasksToComplete(bool isEnabled, bool runAndForget, BatchPoolContainer batchPoolContainer)
         {
             if (!isEnabled)
             {
                 if (runAndForget)
                 {
-                    batchPool.ResumeAndForget();
+                    batchPoolContainer.ResumeAndForget();
                 }
                 else
                 {
-                    await batchPool.ResumeAndWaitForAllAsync();
+                    await batchPoolContainer.ResumeAndWaitForAllAsync();
                 }
             }
 
             if (runAndForget || !isEnabled)
             {
-                await batchPool.WaitForAllAsync();
+                await batchPoolContainer.WaitForAllAsync();
             }
         }
     }

@@ -16,8 +16,8 @@ namespace BatchPool.UnitTests.Scenarios
             int numberOfTasks = 100;
             var progressTracker = new ProgressTracker();
             int batchSize = 5;
-            var batchPool = new BatchPool(batchSize, isEnabled: false);
-            var batchTasks = new List<BatchTask>();
+            var batchPool = new BatchPoolContainer(batchSize, isEnabled: false);
+            var batchTasks = new List<BatchPoolTask>();
             var concurrentQueue = new ConcurrentQueue<int>();
 
             for (int taskIndex = 0; taskIndex < numberOfTasks; taskIndex++)
@@ -53,8 +53,8 @@ namespace BatchPool.UnitTests.Scenarios
             int numberOfTasks = 100;
             var progressTracker = new ProgressTracker();
             int batchSize = 1;
-            var batchPool = new BatchPool(batchSize, isEnabled: false);
-            var batchTasks = new List<BatchTask>();
+            var batchPool = new BatchPoolContainer(batchSize, isEnabled: false);
+            var batchTasks = new List<BatchPoolTask>();
             var concurrentQueue = new ConcurrentQueue<int>();
 
             for (int taskIndex = 0; taskIndex < numberOfTasks; taskIndex++)

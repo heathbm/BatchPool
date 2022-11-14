@@ -16,8 +16,8 @@ namespace BatchPool.UnitTests.Scenarios
             var progressTracker = new ProgressTracker();
             int initBatchSize = 10;
             int newBatchSize = 5;
-            var batchPool = new BatchPool(initBatchSize);
-            var batchTasks = new List<BatchTask>();
+            var batchPool = new BatchPoolContainer(initBatchSize);
+            var batchTasks = new List<BatchPoolTask>();
 
             for (int taskIndex = 0; taskIndex < numberOfTasks; taskIndex++)
             {
@@ -40,8 +40,8 @@ namespace BatchPool.UnitTests.Scenarios
             var progressTracker = new ProgressTracker();
             int initBatchSize = 10;
             int newBatchSize = 5;
-            var batchPool = new BatchPool(initBatchSize);
-            var batchTasks = new List<BatchTask>();
+            var batchPool = new BatchPoolContainer(initBatchSize);
+            var batchTasks = new List<BatchPoolTask>();
 
             for (int taskIndex = 0; taskIndex < numberOfTasks; taskIndex++)
             {
@@ -64,8 +64,8 @@ namespace BatchPool.UnitTests.Scenarios
             var progressTracker = new ProgressTracker();
             int initBatchSize = 5;
             int newBatchSize = 10;
-            var batchPool = new BatchPool(initBatchSize);
-            var batchTasks = new List<BatchTask>();
+            var batchPool = new BatchPoolContainer(initBatchSize);
+            var batchTasks = new List<BatchPoolTask>();
 
             for (int taskIndex = 0; taskIndex < numberOfTasks; taskIndex++)
             {
@@ -88,8 +88,8 @@ namespace BatchPool.UnitTests.Scenarios
             var progressTracker = new ProgressTracker();
             int initBatchSize = 5;
             int newBatchSize = 10;
-            var batchPool = new BatchPool(initBatchSize);
-            var batchTasks = new List<BatchTask>();
+            var batchPool = new BatchPoolContainer(initBatchSize);
+            var batchTasks = new List<BatchPoolTask>();
 
             for (int taskIndex = 0; taskIndex < numberOfTasks; taskIndex++)
             {

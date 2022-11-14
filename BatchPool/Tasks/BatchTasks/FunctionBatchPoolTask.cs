@@ -4,14 +4,14 @@ using BatchPool.Tasks.Containers;
 namespace BatchPool.Tasks.BatchTasks
 {
     /// <inheritdoc/>
-    internal class FunctionBatchTask : BatchTask
+    internal class FunctionBatchPoolTask : BatchPoolTask
     {
-        FunctionContainer _batchTaskWithFunctionDto;
+        FunctionContainer _functionContainer;
 
-        internal FunctionBatchTask(Func<Task> function, ICallback? batchTaskCallback)
-            : base(batchTaskCallback)
+        internal FunctionBatchPoolTask(Func<Task> function, ICallback? callback)
+            : base(callback)
         {
-            _batchTaskWithFunctionDto = new(function);
+            _functionContainer = new(function);
         }
 
         /// <inheritdoc/>
@@ -21,8 +21,8 @@ namespace BatchPool.Tasks.BatchTasks
 
         /// <inheritdoc/>
         public override bool IsCancelled => 
-            _batchTaskWithFunctionDto.Task == null 
-            && _batchTaskWithFunctionDto.Function == null;
+            _functionContainer.Task == null 
+            && _functionContainer.Function == null;
 
         /// <inheritdoc/>
         public override async Task WaitForTaskAsync()
@@ -32,11 +32,11 @@ namespace BatchPool.Tasks.BatchTasks
                 return;
             }
 
-            await _batchTaskWithFunctionDto
+            await _functionContainer
                 .WaitForTaskToComplete()
                 .ConfigureAwait(false);
 
-            await WaitForTaskAndCallbackAsync(_batchTaskWithFunctionDto.Task)
+            await WaitForTaskAndCallbackAsync(_functionContainer.Task)
                 .ConfigureAwait(false);
         }
 
@@ -50,15 +50,15 @@ namespace BatchPool.Tasks.BatchTasks
                     return true;
                 }
 
-                bool isFuncPending = _batchTaskWithFunctionDto.Function != null;
+                bool isFuncPending = _functionContainer.Function != null;
                 if (isFuncPending)
                 {
                     HandleCancellation();
                     return true;
                 }
 
-                bool isTaskPending = _batchTaskWithFunctionDto.Task != null
-                    && !TaskUtil.IsTaskRunningOrCompleted(_batchTaskWithFunctionDto.Task);
+                bool isTaskPending = _functionContainer.Task != null
+                    && !TaskUtil.IsTaskRunningOrCompleted(_functionContainer.Task);
 
                 if (!isTaskPending)
                 {
@@ -80,25 +80,25 @@ namespace BatchPool.Tasks.BatchTasks
 
             var awaitTask = false;
 
-            if (_batchTaskWithFunctionDto.Function != null)
+            if (_functionContainer.Function != null)
             {
-                _batchTaskWithFunctionDto.Task = _batchTaskWithFunctionDto.Function!.Invoke();
-                _batchTaskWithFunctionDto.Function = null;
-                _batchTaskWithFunctionDto.FunctionTask?.TrySetResult();
+                _functionContainer.Task = _functionContainer.Function!.Invoke();
+                _functionContainer.Function = null;
+                _functionContainer.FunctionTask?.TrySetResult();
                 awaitTask = true;
             }
 
-            await StartTaskAndCallBackAndWaitAsync(_batchTaskWithFunctionDto.Task, awaitTask)
+            await StartTaskAndCallBackAndWaitAsync(_functionContainer.Task, awaitTask)
                 .ConfigureAwait(false);
         }
 
         private protected override bool IsTaskCompleted() => 
-            _batchTaskWithFunctionDto.Task?.IsCompleted ?? false;
+            _functionContainer.Task?.IsCompleted ?? false;
 
         private void HandleCancellation()
         {
-            _batchTaskWithFunctionDto.Task = null;
-            _batchTaskWithFunctionDto.Function = null;
+            _functionContainer.Task = null;
+            _functionContainer.Function = null;
         }
     }
 }

@@ -9,12 +9,12 @@ namespace BatchPool.UnitTests.BasicTests.Helpers
 {
     internal static class SharedTests
     {
-        internal static void PostChecks(int numberOfTasks, ProgressTracker progressTracker, ICollection<BatchTask> batchTasks, BatchPool batchPool, CallBackType? callBackType = null, bool? waitForCallBack = null)
+        internal static void PostChecks(int numberOfTasks, ProgressTracker progressTracker, ICollection<BatchPoolTask> batchTasks, BatchPoolContainer batchPoolContainer, CallBackType? callBackType = null, bool? waitForCallBack = null)
         {
-            AssertAllTasksAreComplete(numberOfTasks, progressTracker, batchPool, batchTasks, callBackType, waitForCallBack);
+            AssertAllTasksAreComplete(numberOfTasks, progressTracker, batchPoolContainer, batchTasks, callBackType, waitForCallBack);
         }
 
-        internal static void PreChecks(int numberOfTasks, bool isEnabled, bool runAndForget, ICollection<BatchTask> batchTasks, ProgressTracker progressTracker, BatchPool batchPool, CallBackType? callBackType = null, bool? waitForCallBack = null)
+        internal static void PreChecks(int numberOfTasks, bool isEnabled, bool runAndForget, ICollection<BatchPoolTask> batchTasks, ProgressTracker progressTracker, BatchPoolContainer batchPoolContainer, CallBackType? callBackType = null, bool? waitForCallBack = null)
         {
             // Ensure all tasks have be added
             Assert.Equal(numberOfTasks, batchTasks.Count);
@@ -27,13 +27,13 @@ namespace BatchPool.UnitTests.BasicTests.Helpers
 
             if (isEnabled && !runAndForget)
             {
-                AssertAllTasksAreComplete(numberOfTasks, progressTracker, batchPool, batchTasks, callBackType, waitForCallBack);
+                AssertAllTasksAreComplete(numberOfTasks, progressTracker, batchPoolContainer, batchTasks, callBackType, waitForCallBack);
             }
         }
 
-        private static void AssertAllTasksAreComplete(int numberOfTasks, ProgressTracker progressTracker, BatchPool batchPool, ICollection<BatchTask> batchTasks, CallBackType? callBackType = null, bool? waitForCallBack = null)
+        private static void AssertAllTasksAreComplete(int numberOfTasks, ProgressTracker progressTracker, BatchPoolContainer batchPoolContainer, ICollection<BatchPoolTask> batchTasks, CallBackType? callBackType = null, bool? waitForCallBack = null)
         {
-            Assert.Equal(0, batchPool.GetPendingTaskCount());
+            Assert.Equal(0, batchPoolContainer.GetPendingTaskCount());
 
             if (callBackType.HasValue
                 && waitForCallBack.HasValue
