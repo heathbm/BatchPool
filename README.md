@@ -1,3 +1,5 @@
+<img src=".images/packageIcon.png" alt="drawing" width="160"/>
+
 # BatchPool
 
 [![Build & Tests](https://github.com/heathbm/BatchPool/actions/workflows/dotnet.yml/badge.svg)](https://github.com/heathbm/BatchPool/actions/workflows/dotnet.yml)  
@@ -20,6 +22,11 @@ Contributions are welcome to add features, flexibility, performance test coverag
 - [Task Cancellation](#task-cancellation)
 - [batchPoolContainer Cancellation](#batchpoolcontainer-cancellation)
 - [Adding tasks in batch](#adding-tasks-in-batch)
+- [Dynamic ordering](#dynamic-ordering)
+- [Dynamic custom ordering](#dynamic-custom-ordering)
+- [Updatable dynamic ordering](#updatable-dynamic-ordering)
+- [Updatable dynamic custom ordering](#updatable-dynamic-custom-ordering)
+- [Factory](#factory)
 - [Waiting for tasks to finish](#waiting-for-tasks-to-finish)
 - [BatchPoolContainerManager](#batchpoolcontainermanager)
 - [BatchPoolContainerManager with DI](#batchpoolcontainermanager-with-di)
@@ -97,7 +104,7 @@ BatchPoolContainer batchPoolContainer = new BatchPoolContainer(batchSize: 5, isE
 Task aTask = new Task(() => Console.WriteLine("Hello"));
 BatchPoolTask task = batchPoolContainer.Add(aTask);
 
-bool isCancelled = task.IsCancelled;
+bool isCanceled = task.IsCanceled;
 bool isCompleted = task.IsCompleted;
 ```
 
@@ -120,7 +127,7 @@ batchPoolContainer.RemoveAndCancelPendingTasks();
 ```C#
 CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 BatchPoolContainer batchPoolContainer = new BatchPoolContainer(batchSize: 5, isEnabled: true, cancellationToken: cancellationTokenSource.Token);
-// All pending tasks will be cancelled
+// All pending tasks will be Canceled
 cancellationTokenSource.Cancel();
 ```
 
@@ -134,6 +141,140 @@ Task aTask2 = new Task(() => Console.WriteLine("Hello"));
 List<Task> listOfTasks = new List<Task>() { aTask1, aTask2 };
 
 ICollection<BatchPoolTask> tasks = batchPoolContainer.Add(listOfTasks);
+```
+
+### Dynamic ordering
+
+`int` order example:
+```C#
+int batchSize = 1;
+// The int type provided as the generic parameter will provide dynamic ordering using the default .NET comparer. Order exection will be ascending (smallest to largest).
+BatchPoolDynamicContainer<int> batchPool = new BatchPoolDynamicContainer<int>(batchSize, isEnabled: false);
+
+var task1 = new Task(() => Console.WriteLine("Hello #1"));
+var batchTask1 = batchPool.Add(task1, priority: 1);
+
+var task2 = new Task(() => Console.WriteLine("Hello #2"));
+var batchTask2 = batchPool.Add(task2, 2);
+
+var task3 = new Task(() => Console.WriteLine("Hello #3"));
+var batchTask3 = batchPool.Add(task3, 3);
+
+await batchPool.ResumeAndWaitForAllAsync();
+```
+
+`string` order example:
+```C#
+BatchPoolDynamicContainer<string> batchPool = new BatchPoolDynamicContainer<string>(batchSize, isEnabled: false);
+
+var task1 = new Task(() => Console.WriteLine("Hello #1"));
+var batchTask1 = batchPool.Add(task1, priority: "a");
+
+var task2 = new Task(() => Console.WriteLine("Hello #2"));
+var batchTask2 = batchPool.Add(task2, "b");
+
+var task3 = new Task(() => Console.WriteLine("Hello #3"));
+var batchTask3 = batchPool.Add(task3, "c");
+
+await batchPool.ResumeAndWaitForAllAsync();
+```
+
+`enum` order example:
+```C#
+public enum TestEnum
+{
+    Critical = 0,
+    High = 1,
+    Medium = 2,
+    Low = 3
+}
+
+int batchSize = 1;
+var batchPool = new BatchPoolDynamicContainer<TestEnum>(batchSize, isEnabled: false);
+
+var task1 = new Task(() => executionOrderTracker.Add(TestEnum.High.ToString()));
+var batchTask1 = batchPool.Add(task1, TestEnum.High);
+
+var task2 = new Task(() => executionOrderTracker.Add(TestEnum.Medium.ToString()));
+var batchTask2 = batchPool.Add(task2, TestEnum.Medium);
+
+var task3 = new Task(() => executionOrderTracker.Add(TestEnum.Low.ToString()));
+var batchTask3 = batchPool.Add(task3, TestEnum.Low);
+
+await batchPool.ResumeAndWaitForAllAsync();
+```
+
+### Dynamic custom ordering
+
+Custom ordering simply by passing a new IComparer<T>:
+
+```C#
+// Reverse the default order
+public class StringReverseComparer : IComparer<string>
+{
+    public int Compare(string? x, string? y)
+    {
+        return y!.CompareTo(x!);
+    }
+}
+
+BatchPoolDynamicContainer<string> batchPool = new BatchPoolDynamicContainer<string>(batchSize, new StringReverseComparer(), isEnabled: false);
+```
+
+### Updatable dynamic ordering
+
+```C#
+int batchSize = 1;
+// Use BatchPoolUpdatableDynamicContainer instead of BatchPoolDynamicContainer
+BatchPoolUpdatableDynamicContainer<int> batchPool = new BatchPoolUpdatableDynamicContainer<int>(batchSize, isEnabled: false);
+
+var task1 = new Task(() => Console.WriteLine("Hello #1"));
+var batchTask1 = batchPool.Add(task1, priority: 1);
+
+var task2 = new Task(() => Console.WriteLine("Hello #2"));
+var batchTask2 = batchPool.Add(task2, 2);
+
+var task3 = new Task(() => Console.WriteLine("Hello #3"));
+var batchTask3 = batchPool.Add(task3, 3);
+
+// batchTask1 will now execute last instead of first
+batchPool.UpdatePriority(batchTask1, 4);
+
+await batchPool.ResumeAndWaitForAllAsync();
+```
+
+### Updatable dynamic custom ordering
+
+Custom ordering simply by passing a new IComparer<T>:
+
+```C#
+// Reverse the default order
+public class StringReverseComparer : IComparer<string>
+{
+    public int Compare(string? x, string? y)
+    {
+        return y!.CompareTo(x!);
+    }
+}
+
+BatchPoolUpdatableDynamicContainer<string> batchPool = new BatchPoolUpdatableDynamicContainer<string>(batchSize, new StringReverseComparer(), isEnabled: false);
+```
+
+**Technical Note**: More checks are required for `BatchPoolUpdatableDynamicContainer` over the `BatchPoolDynamicContainer`. However, the performance impact should not be noticeable as they occur at O(1). `UpdatePriority` does not modify the existing data structure, but instead allows the container to check if a priority is current and valid or a new has been added.
+
+### Factory
+
+The `BatchPoolFactory` simply provides a quick way to instantiate a new BatchPoolContainer:
+
+```C#
+// Default queue
+BatchPoolContainer batchPool = BatchPoolFactory.GetQueueBatchPool(batchSize, isEnabled: false);
+
+// Dynamic ordering
+BatchPoolDynamicContainer<int> batchPool = BatchPoolFactory.GetDynamicallyOrderedBatchPool<int>(batchSize, isEnabled: false);
+
+// Dynamic ordering and update existing tasks priority
+BatchPoolUpdatableDynamicContainer<int> batchPool = BatchPoolFactory.GetUpdatableDynamicallyOrderedBatchPool<int>(batchSize, isEnabled: false);
 ```
 
 ### Waiting for tasks to finish
@@ -169,10 +310,11 @@ await batchPoolContainer.WaitForAllAsync(timeout: TimeSpan.FromMilliseconds(100)
 ### BatchPoolContainerManager
 
 ```C#
-BatchPoolContainerManager batchPoolContainerManager = new BatchPoolContainerManager();
+BatchPoolContainerManager<BatchPoolContainer> batchPoolContainerManager = new BatchPoolContainerManager<BatchPoolContainer>();
 
 // Create and register a BatchPool
-batchPoolContainer batchPool = batchPoolContainerManager.CreateAndRegisterBatch("UniqueBatchPoolName", batchSize: 5, isEnabled: true);
+BatchPoolContainer batchPoolContainer = new BatchPoolContainer(batchSize: 5, isEnabled: true);
+batchPoolContainer = batchPoolContainerManager.RegisterBatchPool("UniqueBatchPoolName", batchPoolContainer);
 
 // Retrieve the BatchPool
 bool isFound = batchPoolContainerManager.TryGetBatchPool("UniqueBatchPoolName", out batchPoolContainer retrievedBatchPool);
@@ -188,11 +330,11 @@ await batchPoolContainerManager.WaitForAllBatchPools();
 
 ```C#
 IHost hostBuilder = Host.CreateDefaultBuilder()
-    .ConfigureServices((_, services) => services.AddSingleton<BatchPoolContainerManager>())
+    .ConfigureServices((_, services) => services.AddSingleton<BatchPoolContainerManager<BatchPoolContainer>>())
     .Build();
 
 using IServiceScope serviceScope = hostBuilder.Services.CreateScope();
 IServiceProvider serviceProvider = serviceScope.ServiceProvider;
 
-BatchPoolContainerManager batchPoolContainerManager = serviceProvider.GetRequiredService<BatchPoolContainerManager>();
+BatchPoolContainerManager<BatchPoolContainer> batchPoolContainerManager = serviceProvider.GetRequiredService<BatchPoolContainerManager<BatchPoolContainer>>();
 ```
