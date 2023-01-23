@@ -1,14 +1,11 @@
-﻿using BatchPool.Tasks.Callbacks;
-using BatchPool.Tasks.Containers;
-
-namespace BatchPool.Tasks.BatchTasks
+﻿namespace BatchPool
 {
     /// <inheritdoc/>
-    internal class FunctionBatchPoolTask : BatchPoolTask
+    internal class BatchFunction : BatchPoolTask
     {
         FunctionContainer _functionContainer;
 
-        internal FunctionBatchPoolTask(Func<Task> function, ICallback? callback)
+        internal BatchFunction(Func<Task> function, ICallback? callback)
             : base(callback)
         {
             _functionContainer = new(function);
@@ -16,18 +13,18 @@ namespace BatchPool.Tasks.BatchTasks
 
         /// <inheritdoc/>
         public override bool IsCompleted => 
-            !IsCancelled 
+            !IsCanceled 
             && IsTaskCompleted();
 
         /// <inheritdoc/>
-        public override bool IsCancelled => 
+        public override bool IsCanceled => 
             _functionContainer.Task == null 
             && _functionContainer.Function == null;
 
         /// <inheritdoc/>
         public override async Task WaitForTaskAsync()
         {
-            if (IsCancelled)
+            if (IsCanceled)
             {
                 return;
             }
@@ -45,7 +42,7 @@ namespace BatchPool.Tasks.BatchTasks
         {
             lock (this)
             {
-                if (IsCancelled)
+                if (IsCanceled)
                 {
                     return true;
                 }
@@ -73,7 +70,7 @@ namespace BatchPool.Tasks.BatchTasks
         /// <inheritdoc/>
         internal override async Task StartAndWaitAsync()
         {
-            if (IsCancelled)
+            if (IsCanceled)
             {
                 return;
             }

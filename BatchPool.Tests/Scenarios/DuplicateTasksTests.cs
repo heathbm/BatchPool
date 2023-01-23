@@ -3,7 +3,6 @@ using BatchPool.UnitTests.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using BatchPool.Tasks.BatchTasks;
 using Xunit;
 
 namespace BatchPool.UnitTests.Scenarios

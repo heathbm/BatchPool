@@ -1,4 +1,4 @@
-﻿namespace BatchPool.Tasks
+﻿namespace BatchPool
 {
     internal static class TaskUtil
     {

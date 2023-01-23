@@ -1,4 +1,4 @@
-﻿namespace BatchPool.Tasks.Callbacks
+﻿namespace BatchPool
 {
     internal struct FunctionCallback : ICallback
     {
