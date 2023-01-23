@@ -17,15 +17,15 @@ namespace BatchPool.IntegrationTests
             int batchSize = 5;
 
             var hostBuilder = Host.CreateDefaultBuilder()
-                       .ConfigureServices((_, services) => services.AddSingleton<BatchPoolContainerManager>())
+                       .ConfigureServices((_, services) => services.AddSingleton<BatchPoolContainerManager<BatchPoolContainer>>())
                        .Build();
 
             using var serviceScope = hostBuilder.Services.CreateScope();
             var serviceProvider = serviceScope.ServiceProvider;
 
-            var batchPoolManager = serviceProvider.GetRequiredService<BatchPoolContainerManager>();
+            var batchPoolManager = serviceProvider.GetRequiredService<BatchPoolContainerManager<BatchPoolContainer>>();
 
-            var batchPool = batchPoolManager.CreateAndRegisterBatch("123", batchSize);
+            var batchPool = batchPoolManager.RegisterBatchPool("123", BatchPoolFactory.GetQueueBatchPool(batchSize));
 
             for (int taskIndex = 0; taskIndex < numberOfTasks; taskIndex++)
             {
@@ -49,15 +49,15 @@ namespace BatchPool.IntegrationTests
             int batchSize = 5;
 
             var hostBuilder = Host.CreateDefaultBuilder()
-                       .ConfigureServices((_, services) => services.AddScoped<BatchPoolContainerManager>())
+                       .ConfigureServices((_, services) => services.AddScoped<BatchPoolContainerManager<BatchPoolContainer>>())
                        .Build();
 
             using var serviceScope = hostBuilder.Services.CreateScope();
             var serviceProvider = serviceScope.ServiceProvider;
 
-            var batchPoolManager = serviceProvider.GetRequiredService<BatchPoolContainerManager>();
+            var batchPoolManager = serviceProvider.GetRequiredService<BatchPoolContainerManager<BatchPoolContainer>>();
 
-            var batchPool = batchPoolManager.CreateAndRegisterBatch("123", batchSize);
+            var batchPool = batchPoolManager.RegisterBatchPool("123", BatchPoolFactory.GetQueueBatchPool(batchSize));
 
             for (int taskIndex = 0; taskIndex < numberOfTasks; taskIndex++)
             {
@@ -81,15 +81,15 @@ namespace BatchPool.IntegrationTests
             int batchSize = 5;
 
             var hostBuilder = Host.CreateDefaultBuilder()
-                       .ConfigureServices((_, services) => services.AddTransient<BatchPoolContainerManager>())
+                       .ConfigureServices((_, services) => services.AddTransient<BatchPoolContainerManager<BatchPoolContainer>>())
                        .Build();
 
             using var serviceScope = hostBuilder.Services.CreateScope();
             var serviceProvider = serviceScope.ServiceProvider;
 
-            var batchPoolManager = serviceProvider.GetRequiredService<BatchPoolContainerManager>();
+            var batchPoolManager = serviceProvider.GetRequiredService<BatchPoolContainerManager<BatchPoolContainer>>();
 
-            var batchPool = batchPoolManager.CreateAndRegisterBatch("123", batchSize);
+            var batchPool = batchPoolManager.RegisterBatchPool("123", BatchPoolFactory.GetQueueBatchPool(batchSize));
 
             for (int taskIndex = 0; taskIndex < numberOfTasks; taskIndex++)
             {
@@ -110,16 +110,16 @@ namespace BatchPool.IntegrationTests
             int batchSize = 5;
 
             var hostBuilder = Host.CreateDefaultBuilder()
-                       .ConfigureServices((_, services) => services.AddSingleton<BatchPoolContainerManager>())
+                       .ConfigureServices((_, services) => services.AddSingleton<BatchPoolContainerManager<BatchPoolContainer>>())
                        .Build();
 
             using var serviceScope = hostBuilder.Services.CreateScope();
             var serviceProvider = serviceScope.ServiceProvider;
 
-            var batchPoolManager = serviceProvider.GetRequiredService<BatchPoolContainerManager>();
+            var batchPoolManager = serviceProvider.GetRequiredService<BatchPoolContainerManager<BatchPoolContainer>>();
 
-            var batchPool1 = batchPoolManager.CreateAndRegisterBatch("123", batchSize);
-            var batchPool2 = batchPoolManager.CreateAndRegisterBatch("123", batchSize);
+            var batchPool1 = batchPoolManager.RegisterBatchPool("123", BatchPoolFactory.GetQueueBatchPool(batchSize));
+            var batchPool2 = batchPoolManager.RegisterBatchPool("123", BatchPoolFactory.GetQueueBatchPool(batchSize));
 
             Assert.Equal(batchPool1, batchPool2);
         }
@@ -130,16 +130,16 @@ namespace BatchPool.IntegrationTests
             int batchSize = 5;
 
             var hostBuilder = Host.CreateDefaultBuilder()
-                       .ConfigureServices((_, services) => services.AddScoped<BatchPoolContainerManager>())
+                       .ConfigureServices((_, services) => services.AddScoped<BatchPoolContainerManager<BatchPoolContainer>>())
                        .Build();
 
             using var serviceScope = hostBuilder.Services.CreateScope();
             var serviceProvider = serviceScope.ServiceProvider;
 
-            var batchPoolManager = serviceProvider.GetRequiredService<BatchPoolContainerManager>();
+            var batchPoolManager = serviceProvider.GetRequiredService<BatchPoolContainerManager<BatchPoolContainer>>();
 
-            var batchPool1 = batchPoolManager.CreateAndRegisterBatch("123", batchSize);
-            var batchPool2 = batchPoolManager.CreateAndRegisterBatch("123", batchSize);
+            var batchPool1 = batchPoolManager.RegisterBatchPool("123", BatchPoolFactory.GetQueueBatchPool(batchSize));
+            var batchPool2 = batchPoolManager.RegisterBatchPool("123", BatchPoolFactory.GetQueueBatchPool(batchSize));
 
             Assert.Equal(batchPool1, batchPool2);
         }
@@ -150,16 +150,16 @@ namespace BatchPool.IntegrationTests
             int batchSize = 5;
 
             var hostBuilder = Host.CreateDefaultBuilder()
-                       .ConfigureServices((_, services) => services.AddTransient<BatchPoolContainerManager>())
+                       .ConfigureServices((_, services) => services.AddTransient<BatchPoolContainerManager<BatchPoolContainer>>())
                        .Build();
 
             using var serviceScope = hostBuilder.Services.CreateScope();
             var serviceProvider = serviceScope.ServiceProvider;
 
-            var batchPoolManager = serviceProvider.GetRequiredService<BatchPoolContainerManager>();
+            var batchPoolManager = serviceProvider.GetRequiredService<BatchPoolContainerManager<BatchPoolContainer>>();
 
-            var batchPool1 = batchPoolManager.CreateAndRegisterBatch("123", batchSize);
-            var batchPool2 = batchPoolManager.CreateAndRegisterBatch("123", batchSize);
+            var batchPool1 = batchPoolManager.RegisterBatchPool("123", BatchPoolFactory.GetQueueBatchPool(batchSize));
+            var batchPool2 = batchPoolManager.RegisterBatchPool("123", BatchPoolFactory.GetQueueBatchPool(batchSize));
 
             Assert.Equal(batchPool1, batchPool2);
         }
@@ -170,22 +170,22 @@ namespace BatchPool.IntegrationTests
             int batchSize = 5;
 
             var hostBuilder = Host.CreateDefaultBuilder()
-                       .ConfigureServices((_, services) => services.AddSingleton<BatchPoolContainerManager>())
+                       .ConfigureServices((_, services) => services.AddSingleton<BatchPoolContainerManager<BatchPoolContainer>>())
                        .Build();
 
             using var serviceScope = hostBuilder.Services.CreateScope();
             var serviceProvider = serviceScope.ServiceProvider;
 
-            var batchPoolManager = serviceProvider.GetRequiredService<BatchPoolContainerManager>();
+            var batchPoolManager = serviceProvider.GetRequiredService<BatchPoolContainerManager<BatchPoolContainer>>();
 
-            var batchPool1 = batchPoolManager.CreateAndRegisterBatch("123", batchSize);
+            var batchPool1 = batchPoolManager.RegisterBatchPool("123", BatchPoolFactory.GetQueueBatchPool(batchSize));
 
             using var serviceScope2 = hostBuilder.Services.CreateScope();
             serviceProvider = serviceScope2.ServiceProvider;
 
-            batchPoolManager = serviceProvider.GetRequiredService<BatchPoolContainerManager>();
+            batchPoolManager = serviceProvider.GetRequiredService<BatchPoolContainerManager<BatchPoolContainer>>();
 
-            var batchPool2 = batchPoolManager.CreateAndRegisterBatch("123", batchSize);
+            var batchPool2 = batchPoolManager.RegisterBatchPool("123", BatchPoolFactory.GetQueueBatchPool(batchSize));
 
             Assert.Equal(batchPool1, batchPool2);
         }
@@ -196,22 +196,22 @@ namespace BatchPool.IntegrationTests
             int batchSize = 5;
 
             var hostBuilder = Host.CreateDefaultBuilder()
-                       .ConfigureServices((_, services) => services.AddScoped<BatchPoolContainerManager>())
+                       .ConfigureServices((_, services) => services.AddScoped<BatchPoolContainerManager<BatchPoolContainer>>())
                        .Build();
 
             using var serviceScope = hostBuilder.Services.CreateScope();
             var serviceProvider = serviceScope.ServiceProvider;
 
-            var batchPoolManager = serviceProvider.GetRequiredService<BatchPoolContainerManager>();
+            var batchPoolManager = serviceProvider.GetRequiredService<BatchPoolContainerManager<BatchPoolContainer>>();
 
-            var batchPool1 = batchPoolManager.CreateAndRegisterBatch("123", batchSize);
+            var batchPool1 = batchPoolManager.RegisterBatchPool("123", BatchPoolFactory.GetQueueBatchPool(batchSize));
 
             using var serviceScope2 = hostBuilder.Services.CreateScope();
             serviceProvider = serviceScope2.ServiceProvider;
 
-            batchPoolManager = serviceProvider.GetRequiredService<BatchPoolContainerManager>();
+            batchPoolManager = serviceProvider.GetRequiredService<BatchPoolContainerManager<BatchPoolContainer>>();
 
-            var batchPool2 = batchPoolManager.CreateAndRegisterBatch("123", batchSize);
+            var batchPool2 = batchPoolManager.RegisterBatchPool("123", BatchPoolFactory.GetQueueBatchPool(batchSize));
 
             Assert.NotEqual(batchPool1, batchPool2);
         }
@@ -222,22 +222,22 @@ namespace BatchPool.IntegrationTests
             int batchSize = 5;
 
             var hostBuilder = Host.CreateDefaultBuilder()
-                       .ConfigureServices((_, services) => services.AddTransient<BatchPoolContainerManager>())
+                       .ConfigureServices((_, services) => services.AddTransient<BatchPoolContainerManager<BatchPoolContainer>>())
                        .Build();
 
             using var serviceScope = hostBuilder.Services.CreateScope();
             var serviceProvider = serviceScope.ServiceProvider;
 
-            var batchPoolManager = serviceProvider.GetRequiredService<BatchPoolContainerManager>();
+            var batchPoolManager = serviceProvider.GetRequiredService<BatchPoolContainerManager<BatchPoolContainer>>();
 
-            var batchPool1 = batchPoolManager.CreateAndRegisterBatch("123", batchSize);
+            var batchPool1 = batchPoolManager.RegisterBatchPool("123", BatchPoolFactory.GetQueueBatchPool(batchSize));
 
             using var serviceScope2 = hostBuilder.Services.CreateScope();
             serviceProvider = serviceScope2.ServiceProvider;
 
-            batchPoolManager = serviceProvider.GetRequiredService<BatchPoolContainerManager>();
+            batchPoolManager = serviceProvider.GetRequiredService<BatchPoolContainerManager<BatchPoolContainer>>();
 
-            var batchPool2 = batchPoolManager.CreateAndRegisterBatch("123", batchSize);
+            var batchPool2 = batchPoolManager.RegisterBatchPool("123", BatchPoolFactory.GetQueueBatchPool(batchSize));
 
             Assert.NotEqual(batchPool1, batchPool2);
         }

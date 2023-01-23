@@ -1,6 +1,4 @@
-using BatchPool.Tasks.Callbacks;
-
-namespace BatchPool.Tasks.BatchTasks
+namespace BatchPool
 {
     /// <summary>
     /// A container for a task and an optional Callback.

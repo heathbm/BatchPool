@@ -1,4 +1,4 @@
-﻿namespace BatchPool.Tasks.Containers
+﻿namespace BatchPool
 {
     internal struct FunctionContainer : ITaskContainer
     {

@@ -14,9 +14,9 @@ namespace BatchPool.UnitTests.BasicTests
             int taskProgress = 0;
             int batchSize = 5;
 
-            var batchPoolManager = new BatchPoolContainerManager();
+            var batchPoolManager = new BatchPoolContainerManager<BatchPoolContainer>();
 
-            var batchPool = batchPoolManager.CreateAndRegisterBatch("123", batchSize);
+            var batchPool = batchPoolManager.RegisterBatchPool("123", BatchPoolFactory.GetQueueBatchPool(batchSize));
 
             for (int taskIndex = 0; taskIndex < numberOfTasks; taskIndex++)
             {
@@ -39,9 +39,9 @@ namespace BatchPool.UnitTests.BasicTests
             int taskProgress = 0;
             int batchSize = 5;
 
-            var batchPoolManager = new BatchPoolContainerManager();
+            var batchPoolManager = new BatchPoolContainerManager<BatchPoolContainer>();
 
-            batchPoolManager.CreateAndRegisterBatch("123", batchSize);
+            batchPoolManager.RegisterBatchPool("123", BatchPoolFactory.GetQueueBatchPool(batchSize));
             var isBatchPoolFound = batchPoolManager.TryGetBatchPool("123", out BatchPoolContainer? batchPool);
             Assert.True(isBatchPoolFound);
 
@@ -66,9 +66,9 @@ namespace BatchPool.UnitTests.BasicTests
             int taskProgress = 0;
             int batchSize = 5;
 
-            var batchPoolManager = new BatchPoolContainerManager();
+            var batchPoolManager = new BatchPoolContainerManager<BatchPoolContainer>();
 
-            var batchPool = batchPoolManager.CreateAndRegisterBatch("123", batchSize);
+            var batchPool = batchPoolManager.RegisterBatchPool("123", BatchPoolFactory.GetQueueBatchPool(batchSize));
 
             for (int taskIndex = 0; taskIndex < numberOfTasks; taskIndex++)
             {
@@ -88,11 +88,11 @@ namespace BatchPool.UnitTests.BasicTests
         {
             int batchSize = 5;
 
-            var batchPoolManager = new BatchPoolContainerManager();
+            var batchPoolManager = new BatchPoolContainerManager<BatchPoolContainer>();
 
-            var batchPool1 = batchPoolManager.CreateAndRegisterBatch("123", batchSize);
-            var batchPool2 = batchPoolManager.CreateAndRegisterBatch("123", batchSize);
-
+            var batchPool1 = batchPoolManager.RegisterBatchPool("123", BatchPoolFactory.GetQueueBatchPool(batchSize));
+            var batchPool2 = batchPoolManager.RegisterBatchPool("123", BatchPoolFactory.GetQueueBatchPool(batchSize));
+                
             Assert.Equal(batchPool1, batchPool2);
         }
 
@@ -101,15 +101,39 @@ namespace BatchPool.UnitTests.BasicTests
         {
             int batchSize = 5;
 
-            var batchPoolManager = new BatchPoolContainerManager();
+            var batchPoolManager = new BatchPoolContainerManager<BatchPoolContainer>();
 
-            var batchPool1 = batchPoolManager.CreateAndRegisterBatch("123", batchSize);
-            var batchPool2 = batchPoolManager.CreateAndRegisterBatch("123", batchSize);
+            var batchPool1 = batchPoolManager.RegisterBatchPool("123", BatchPoolFactory.GetQueueBatchPool(batchSize));
+            var batchPool2 = batchPoolManager.RegisterBatchPool("123", BatchPoolFactory.GetQueueBatchPool(batchSize));
             var isBatchPoolFound = batchPoolManager.TryGetBatchPool("123", out BatchPoolContainer? batchPoolR);
             Assert.True(isBatchPoolFound);
 
             Assert.Equal(batchPool1, batchPoolR);
             Assert.Equal(batchPool2, batchPoolR);
+        }
+
+        [Fact]
+        public static void TryToCreateAndRegisterDynamicBatchPool_ReturnsCorrectType()
+        {
+            int batchSize = 5;
+
+            var batchPoolManager = new BatchPoolContainerManager<BatchPoolDynamicContainer<string>>();
+
+            var batchPool1 = batchPoolManager.RegisterBatchPool("123", BatchPoolFactory.GetDynamicallyOrderedBatchPool<string>(batchSize));
+
+            Assert.Equal(typeof(BatchPoolDynamicContainer<string>), batchPool1.GetType());
+        }
+
+        [Fact]
+        public static void TryToCreateAndRegisterUpdatableDynamicBatchPool_ReturnsCorrectType()
+        {
+            int batchSize = 5;
+
+            var batchPoolManager = new BatchPoolContainerManager<BatchPoolUpdatableDynamicContainer<string>>();
+
+            var batchPool1 = batchPoolManager.RegisterBatchPool("123", BatchPoolFactory.GetUpdatableDynamicallyOrderedBatchPool<string>(batchSize));
+
+            Assert.Equal(typeof(BatchPoolUpdatableDynamicContainer<string>), batchPool1.GetType());
         }
     }
 }

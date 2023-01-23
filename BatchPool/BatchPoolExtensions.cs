@@ -1,6 +1,4 @@
-﻿using BatchPool.Tasks.BatchTasks;
-
-namespace BatchPool
+﻿namespace BatchPool
 {
     public static class BatchPoolExtensions
     {
@@ -10,7 +8,7 @@ namespace BatchPool
         /// <param name="pendingTasks">Tasks to wait for to finish.</param>
         public static async Task WaitForAllAsync(this IEnumerable<BatchPoolTask> pendingTasks)
         {
-            await BatchPoolContainer
+            await BatchPoolContainerBase
                 .WaitForAllAsync(pendingTasks)
                 .ConfigureAwait(false);
         }

@@ -1,14 +1,11 @@
-﻿using BatchPool.Tasks.Callbacks;
-using BatchPool.Tasks.Containers;
-
-namespace BatchPool.Tasks.BatchTasks
+﻿namespace BatchPool
 {
     /// <inheritdoc/>
-    public class PoolTaskBatchPoolTask : BatchPoolTask
+    public class BatchTask : BatchPoolTask
     {
         TaskContainer _taskContainer;
 
-        internal PoolTaskBatchPoolTask(Task task, ICallback? callback)
+        internal BatchTask(Task task, ICallback? callback)
             : base(callback)
         {
             _taskContainer = new(task);

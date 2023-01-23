@@ -1,7 +1,6 @@
 ﻿using BatchPool.UnitTests.Utilities;
 using System.Collections.Generic;
 using System.Linq;
-using BatchPool.Tasks.BatchTasks;
 using Xunit;
 using static BatchPool.UnitTests.Utilities.TestConstants;
 
