@@ -19,6 +19,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="..\.images\packageIcon.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
     <None Include="..\LICENSE">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
