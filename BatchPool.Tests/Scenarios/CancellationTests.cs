@@ -10,7 +10,7 @@ namespace BatchPool.UnitTests.Scenarios
     public static class CancellationTests
     {
         [Fact]
-        public static async Task CreateBatchPoolAndAddTasks_CancelOneBeforeStartingProcessing_AllProcessExceptCancelledOne()
+        public static async Task CreateBatchPoolAndAddTasks_CancelOneBeforeStartingProcessing_AllProcessExceptCanceledOne()
         {
             int numberOfTasks = 100;
             var progressTracker = new ProgressTracker();
@@ -34,8 +34,8 @@ namespace BatchPool.UnitTests.Scenarios
 
             Assert.Equal(numberOfTasks, batchPool.GetPendingTaskCount());
 
-            var isCancelled = middleTask!.Cancel();
-            Assert.True(isCancelled);
+            var isCanceled = middleTask!.Cancel();
+            Assert.True(isCanceled);
             Assert.Equal(numberOfTasks - 1, batchPool.GetPendingTaskCount());
 
             batchPool.ResumeAndForget();
@@ -45,7 +45,7 @@ namespace BatchPool.UnitTests.Scenarios
         }
 
         [Fact]
-        public static async Task CreateBatchPoolAndAddTasks_CancelMultipleBeforeStartingProcessing_AllProcessExceptCancelledOnes()
+        public static async Task CreateBatchPoolAndAddTasks_CancelMultipleBeforeStartingProcessing_AllProcessExceptCanceledOnes()
         {
             int numberOfTasks = 100;
             var progressTracker = new ProgressTracker();
@@ -83,8 +83,8 @@ namespace BatchPool.UnitTests.Scenarios
 
             foreach (var task in middleTasks)
             {
-                var isCancelled = task.Cancel();
-                Assert.True(isCancelled);
+                var isCanceled = task.Cancel();
+                Assert.True(isCanceled);
             }
 
             Assert.Equal(numberOfTasks - 3, batchPool.GetPendingTaskCount());
@@ -96,7 +96,7 @@ namespace BatchPool.UnitTests.Scenarios
         }
 
         [Fact]
-        public static async Task CreateBatchPoolAndAddTasks_CancelAndRemoveOneBeforeStartingProcessing_AllProcessExceptCancelledAndRemovedOne()
+        public static async Task CreateBatchPoolAndAddTasks_CancelAndRemoveOneBeforeStartingProcessing_AllProcessExceptCanceledAndRemovedOne()
         {
             int numberOfTasks = 100;
             var progressTracker = new ProgressTracker();
@@ -120,8 +120,8 @@ namespace BatchPool.UnitTests.Scenarios
 
             Assert.Equal(numberOfTasks, batchPool.GetPendingTaskCount());
 
-            var isCancelled = BatchPoolContainer.RemoveAndCancel(middleTask!);
-            Assert.True(isCancelled);
+            var isCanceled = BatchPoolContainer.RemoveAndCancel(middleTask!);
+            Assert.True(isCanceled);
 
             Assert.Equal(numberOfTasks - 1, batchPool.GetPendingTaskCount());
 
@@ -133,7 +133,7 @@ namespace BatchPool.UnitTests.Scenarios
 
 
         [Fact]
-        public static async Task CreateBatchPoolAndAddTasks_CancelAndRemoveMultipleBeforeStartingProcessing_AllProcessExceptCancelledAndRemovedOnes()
+        public static async Task CreateBatchPoolAndAddTasks_CancelAndRemoveMultipleBeforeStartingProcessing_AllProcessExceptCanceledAndRemovedOnes()
         {
             int numberOfTasks = 100;
             var progressTracker = new ProgressTracker();
@@ -180,7 +180,7 @@ namespace BatchPool.UnitTests.Scenarios
         }
 
         [Fact]
-        public static async Task CreateBatchPoolAndAddTasks_CancelOneWhileProcessing_AllProcessExceptCancelledOne()
+        public static async Task CreateBatchPoolAndAddTasks_CancelOneWhileProcessing_AllProcessExceptCanceledOne()
         {
             var progressTracker = new ProgressTracker();
             int batchSize = 1;
@@ -229,13 +229,13 @@ namespace BatchPool.UnitTests.Scenarios
 
             // Ensure all tasks are complete and no tasks are waiting
             Assert.False(secondTask.IsCompleted);
-            Assert.True(secondTask.IsCancelled);
+            Assert.True(secondTask.IsCanceled);
             Assert.Equal(1, progressTracker.Progress);
             Assert.Equal(0, batchPool.GetPendingTaskCount());
         }
 
         [Fact]
-        public static async Task CreateBatchPoolAndAddTasks_CancelOneWithCallbackWhileProcessing_AllProcessExceptCancelledOneAndItsCallback()
+        public static async Task CreateBatchPoolAndAddTasks_CancelOneWithCallbackWhileProcessing_AllProcessExceptCanceledOneAndItsCallback()
         {
             var progressTracker = new ProgressTracker();
             int batchSize = 1;
@@ -297,13 +297,13 @@ namespace BatchPool.UnitTests.Scenarios
 
             // Ensure all tasks are complete and no tasks are waiting
             Assert.False(secondTask.IsCompleted);
-            Assert.True(secondTask.IsCancelled);
+            Assert.True(secondTask.IsCanceled);
             Assert.Equal(2, progressTracker.Progress);
             Assert.Equal(0, batchPool.GetPendingTaskCount());
         }
 
         [Fact]
-        public static async Task CreateBatchPoolAndAddTasks_CancelAndRemoveOneWhileProcessing_AllProcessExceptCancelledOne()
+        public static async Task CreateBatchPoolAndAddTasks_CancelAndRemoveOneWhileProcessing_AllProcessExceptCanceledOne()
         {
             var progressTracker = new ProgressTracker();
             int batchSize = 1;
@@ -353,13 +353,13 @@ namespace BatchPool.UnitTests.Scenarios
 
             // Ensure all tasks are complete and no tasks are waiting
             Assert.False(secondTask.IsCompleted);
-            Assert.True(secondTask.IsCancelled);
+            Assert.True(secondTask.IsCanceled);
             Assert.Equal(1, progressTracker.Progress);
             Assert.Equal(0, batchPool.GetPendingTaskCount());
         }
 
         [Fact]
-        public static async Task CreateBatchPoolAndAddTasks_CancelAndRemoveOneWithCallbackWhileProcessing_AllProcessExceptCancelledOneAndItsCallback()
+        public static async Task CreateBatchPoolAndAddTasks_CancelAndRemoveOneWithCallbackWhileProcessing_AllProcessExceptCanceledOneAndItsCallback()
         {
             var progressTracker = new ProgressTracker();
             int batchSize = 1;
@@ -421,7 +421,7 @@ namespace BatchPool.UnitTests.Scenarios
 
             // Ensure all tasks are complete and no tasks are waiting
             Assert.False(secondTask.IsCompleted);
-            Assert.True(secondTask.IsCancelled);
+            Assert.True(secondTask.IsCanceled);
             Assert.Equal(2, progressTracker.Progress);
             Assert.Equal(0, batchPool.GetPendingTaskCount());
         }
@@ -448,7 +448,7 @@ namespace BatchPool.UnitTests.Scenarios
             batchPool.ResumeAndForget();
             await batchPool.WaitForAllAsync();
 
-            Assert.True(batchTasks.TrueForAll(batchTask => batchTask.IsCancelled));
+            Assert.True(batchTasks.TrueForAll(batchTask => batchTask.IsCanceled));
             Assert.True(batchTasks.TrueForAll(batchTask => !batchTask.IsCompleted));
             Assert.Equal(0, batchPool.GetPendingTaskCount());
         }
@@ -479,7 +479,7 @@ namespace BatchPool.UnitTests.Scenarios
             batchPool.ResumeAndForget();
             await batchPool.WaitForAllAsync();
 
-            Assert.True(batchTasks.TrueForAll(batchTask => batchTask.IsCancelled));
+            Assert.True(batchTasks.TrueForAll(batchTask => batchTask.IsCanceled));
             Assert.True(batchTasks.TrueForAll(batchTask => !batchTask.IsCompleted));
             Assert.Equal(0, batchPool.GetPendingTaskCount());
         }
@@ -503,8 +503,8 @@ namespace BatchPool.UnitTests.Scenarios
             Assert.Equal(1, batchPool.GetPendingTaskCount());
 
             batchPool.ResumeAndForget();
-            var isCancelled = firstTask.Cancel();
-            Assert.False(isCancelled);
+            var isCanceled = firstTask.Cancel();
+            Assert.False(isCanceled);
             Assert.Equal(0, progressTracker.Progress);
             Assert.Equal(0, batchPool.GetPendingTaskCount());
             Assert.Equal(0, progressTracker.Progress);
@@ -512,8 +512,8 @@ namespace BatchPool.UnitTests.Scenarios
             await batchPool.WaitForAllAsync();
 
             Assert.Equal(0, batchPool.GetPendingTaskCount());
-            // It was already running so it can't be cancelled
-            Assert.False(firstTask.IsCancelled);
+            // It was already running so it can't be canceled
+            Assert.False(firstTask.IsCanceled);
             Assert.True(firstTask.IsCompleted);
 
             // Ensure carries on

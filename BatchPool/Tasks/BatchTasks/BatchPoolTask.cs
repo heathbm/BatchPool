@@ -18,19 +18,19 @@ namespace BatchPool
         public abstract Task WaitForTaskAsync();
 
         /// <summary>
-        /// Cancel the task. Returns true if the task was cancelled successfully.
+        /// Cancel the task. Returns true if the task was canceled successfully.
         /// </summary>
         public abstract bool Cancel();
 
         /// <summary>
-        /// Has the task completed without being cancelled.
+        /// Has the task completed without being canceled.
         /// </summary>
         public abstract bool IsCompleted { get; }
 
         /// <summary>
-        /// Is the Task permanently cancelled.
+        /// Is the Task permanently canceled.
         /// </summary>
-        public abstract bool IsCancelled { get; }
+        public abstract bool IsCanceled { get; }
 
         /// <summary>
         /// Start the task and wait for the task to complete.

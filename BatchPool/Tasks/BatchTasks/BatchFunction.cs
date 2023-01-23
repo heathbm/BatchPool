@@ -13,18 +13,18 @@
 
         /// <inheritdoc/>
         public override bool IsCompleted => 
-            !IsCancelled 
+            !IsCanceled 
             && IsTaskCompleted();
 
         /// <inheritdoc/>
-        public override bool IsCancelled => 
+        public override bool IsCanceled => 
             _functionContainer.Task == null 
             && _functionContainer.Function == null;
 
         /// <inheritdoc/>
         public override async Task WaitForTaskAsync()
         {
-            if (IsCancelled)
+            if (IsCanceled)
             {
                 return;
             }
@@ -42,7 +42,7 @@
         {
             lock (this)
             {
-                if (IsCancelled)
+                if (IsCanceled)
                 {
                     return true;
                 }
@@ -70,7 +70,7 @@
         /// <inheritdoc/>
         internal override async Task StartAndWaitAsync()
         {
-            if (IsCancelled)
+            if (IsCanceled)
             {
                 return;
             }

@@ -28,7 +28,7 @@ namespace BatchPool
         public int GetPendingTaskCount() =>
             _activePriorities
             .Keys
-            .Count(a => !a.IsCancelled);
+            .Count(a => !a.IsCanceled);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public BatchPoolTask[] ToArray()

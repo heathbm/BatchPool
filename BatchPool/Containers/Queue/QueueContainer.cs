@@ -20,7 +20,7 @@ namespace BatchPool
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int GetPendingTaskCount() =>
-            _queue.Count(a => !a.IsCancelled);
+            _queue.Count(a => !a.IsCanceled);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public BatchPoolTask[] ToArray() =>

@@ -36,7 +36,7 @@
         /// </summary>
         private readonly SemaphoreSlim _batchUpdateSemaphore;
         /// <summary>
-        /// Tracks running tasks so they can be awaited or cancelled as required.
+        /// Tracks running tasks so they can be awaited or canceled as required.
         /// </summary>
         private readonly HashSet<BatchPoolTask> _runningTasks;
 
@@ -147,7 +147,7 @@
         /// Wait for all tasks that exist in the BatchPoolContainer at the time of calling this method.
         /// </summary>
         /// <param name="cancellationToken">Cancellation token to cancel waiting for all tasks to complete.</param>
-        /// <returns>Returns true if all tasks are completed, false if the cancellation token is cancelled.</returns>
+        /// <returns>Returns true if all tasks are completed, false if the cancellation token is canceled.</returns>
         public async Task<bool> WaitForAllAsync(CancellationToken cancellationToken) =>
             await WaitForAllAsync()
             .AwaitWithTimeout(timeoutInMilliseconds: null, cancellationToken)
@@ -158,7 +158,7 @@
         /// </summary>
         /// <param name="timeoutInMilliseconds">Max time to wait for all tasks to finish.</param>
         /// <param name="cancellationToken">Cancellation token to cancel waiting for all tasks to complete.</param>
-        /// <returns>Returns true if all tasks are completed before the timout occurs, false if the timeout occurs or the cancellation token is cancelled.</returns>
+        /// <returns>Returns true if all tasks are completed before the timout occurs, false if the timeout occurs or the cancellation token is canceled.</returns>
         public async Task<bool> WaitForAllAsync(uint timeoutInMilliseconds, CancellationToken cancellationToken) =>
             await WaitForAllAsync(cancellationToken)
             .AwaitWithTimeout(timeoutInMilliseconds, cancellationToken)
@@ -169,7 +169,7 @@
         /// </summary>
         /// <param name="timeout">Max time to wait for all tasks to finish.</param>
         /// <param name="cancellationToken">Cancellation token to cancel waiting for all tasks to complete.</param>
-        /// <returns>Returns true if all tasks are completed before the timout occurs, false if the timeout occurs or the cancellation token is cancelled.</returns>
+        /// <returns>Returns true if all tasks are completed before the timout occurs, false if the timeout occurs or the cancellation token is canceled.</returns>
         public async Task<bool> WaitForAllAsync(TimeSpan timeout, CancellationToken cancellationToken) =>
             await WaitForAllAsync(cancellationToken)
             .AwaitWithTimeout(timeout, cancellationToken)
@@ -262,7 +262,7 @@
         }
 
         /// <summary>
-        /// Cancels a task if it has not yet started. Returns true if successfully cancelled, false if could not be cancelled.
+        /// Cancels a task if it has not yet started. Returns true if successfully canceled, false if could not be canceled.
         /// </summary>
         public static bool RemoveAndCancel(BatchPoolTask batchPoolTask) =>
             batchPoolTask.Cancel();
@@ -298,14 +298,14 @@
 
         internal BatchTask GetTask(Task task, Task? taskCallback = null, Func<Task>? functionCallback = null, Action? actionCallback = null, bool waitForCallback = false)
         {
-            ThrowTokenCancelledIfCancelled();
+            ThrowTokenCanceledIfCanceled();
             ThrowArgumentExceptionIfValidationIsEnabledAndFails(task);
             return new(task, GetCallback(taskCallback, functionCallback, actionCallback, waitForCallback));
         }
 
         internal BatchFunction GetFunc(Func<Task> function, Task? taskCallback = null, Func<Task>? functionCallback = null, Action? actionCallback = null, bool waitForCallback = false)
         {
-            ThrowTokenCancelledIfCancelled();
+            ThrowTokenCanceledIfCanceled();
             return new(function, GetCallback(taskCallback, functionCallback, actionCallback, waitForCallback));
         }
 
@@ -328,23 +328,23 @@
         /// </summary>
         private bool IsReady() => _isEnabled && !_isRunning;
 
-        private void HandleCancelTokenCancelled()
+        private void HandleCancelTokenCanceled()
         {
             RemoveAndCancelPendingTasks();
             _isRunning = false;
             _cancellationToken.ThrowIfCancellationRequested();
         }
 
-        private void ThrowTokenCancelledIfCancelled()
+        private void ThrowTokenCanceledIfCanceled()
         {
             if (_cancellationToken.IsCancellationRequested)
             {
-                HandleCancelTokenCancelled();
+                HandleCancelTokenCanceled();
             }
         }
 
         /// <summary>
-        /// Primary control loop that will not exit unless the BatchPoolContainer is cancelled or all pending tasks are finished.
+        /// Primary control loop that will not exit unless the BatchPoolContainer is canceled or all pending tasks are finished.
         /// </summary>
         private async Task RunBatchPool()
         {
@@ -359,7 +359,7 @@
             {
                 if (_cancellationToken.IsCancellationRequested)
                 {
-                    HandleCancelTokenCancelled();
+                    HandleCancelTokenCanceled();
                     return;
                 }
 

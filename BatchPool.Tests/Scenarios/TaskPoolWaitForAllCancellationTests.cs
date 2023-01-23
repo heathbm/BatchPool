@@ -9,7 +9,7 @@ namespace BatchPool.UnitTests.Scenarios
     public static class TaskPoolWaitForAllCancellationTests
     {
         [Fact]
-        public static async Task WaitForAllTasksToComplete_WithAlreadyCancelledToken_DoesNotWaitForTask()
+        public static async Task WaitForAllTasksToComplete_WithAlreadyCanceledToken_DoesNotWaitForTask()
         {
             var progressTracker = new ProgressTracker();
             int batchSize = 1;
@@ -62,7 +62,7 @@ namespace BatchPool.UnitTests.Scenarios
         }
 
         [Fact]
-        public static async Task WaitForAllTasksToComplete_WithAlreadyCancelledTokenAndAlreadyCompletedTask_ReturnsFalse()
+        public static async Task WaitForAllTasksToComplete_WithAlreadyCanceledTokenAndAlreadyCompletedTask_ReturnsFalse()
         {
             var progressTracker = new ProgressTracker();
             int batchSize = 1;
